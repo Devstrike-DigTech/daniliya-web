@@ -1,0 +1,70 @@
+@import "tailwindcss";
+
+/*
+ * Product Sans — the design's typeface.
+ * Drop the font files into public/fonts/ with these exact names and the
+ * site picks them up automatically (until then, DM Sans is the fallback):
+ *   public/fonts/ProductSans-Regular.woff2
+ *   public/fonts/ProductSans-Medium.woff2
+ *   public/fonts/ProductSans-Bold.woff2
+ * (.ttf also works — adjust format() below if you only have .ttf)
+ */
+@font-face {
+  font-family: "Product Sans";
+  src: url("/fonts/ProductSans-Regular.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Product Sans";
+  src: url("/fonts/ProductSans-Medium.woff2") format("woff2");
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Product Sans";
+  src: url("/fonts/ProductSans-Bold.woff2") format("woff2");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@theme {
+  /* Palette sampled from the Figma exports (Home.png) */
+  --color-brand: #d4a017;
+  --color-ink: #212121;
+  --color-coal: #2d2d2d;
+  --color-cream: #fdfaf3;
+  --color-paper: #ffffff;
+  --color-navy: #1b3a6b;
+  --color-teal: #0e7490;
+  --color-gold: #d4a017;
+  --font-sans: "Product Sans", var(--font-fallback), Arial, Helvetica,
+    sans-serif;
+}
+
+body {
+  background: var(--color-paper);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+}
+
+/* Giant outlined DANILIYA wordmark used in the footer */
+.wordmark-outline {
+  color: transparent;
+  -webkit-text-stroke: 2px rgba(212, 160, 23, 0.5);
+  letter-spacing: 0.02em;
+}
+
+/* Subtle vertical pinstripes over the dark hero */
+.pinstripes {
+  background-image: repeating-linear-gradient(
+    to right,
+    transparent 0,
+    transparent 119px,
+    rgba(255, 255, 255, 0.045) 119px,
+    rgba(255, 255, 255, 0.045) 120px
+  );
+}
