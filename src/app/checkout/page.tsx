@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Ambient from "@/components/Ambient";
 import Image from "next/image";
 import Link from "next/link";
 import { products } from "@/lib/data";
@@ -25,6 +26,7 @@ export default function CheckoutPage() {
 
   return (
     <section className="mx-auto max-w-7xl px-4 py-12 sm:px-6">
+      <Ambient theme="checkout" />
       <div className="flex items-center justify-between">
         <h1 className="text-3xl font-bold">Delivery Details</h1>
         <div className="flex rounded-full border border-ink/15 p-1 text-sm font-bold">

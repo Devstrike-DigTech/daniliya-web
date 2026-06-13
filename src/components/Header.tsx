@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
+import Icon from "@/components/Icon";
 
 const navLinks = [
   { href: "/", label: "Home" },
@@ -46,21 +47,7 @@ export default function Header() {
             aria-label="Cart"
             className="flex h-11 w-11 items-center justify-center rounded-lg bg-brand text-mauve-50 transition-opacity hover:opacity-90"
           >
-            <svg
-              width="19"
-              height="19"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              aria-hidden
-            >
-              <circle cx="9" cy="21" r="1" />
-              <circle cx="20" cy="21" r="1" />
-              <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />
-            </svg>
+            <Icon name="cart" size={19} />
           </Link>
           <Link
             href="/affiliates"
@@ -73,22 +60,7 @@ export default function Header() {
             onClick={() => setOpen(!open)}
             className="flex h-11 w-11 items-center justify-center text-brand lg:hidden"
           >
-            <svg
-              width="22"
-              height="22"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              aria-hidden
-            >
-              {open ? (
-                <path d="M18 6 6 18M6 6l12 12" />
-              ) : (
-                <path d="M3 6h18M3 12h18M3 18h18" />
-              )}
-            </svg>
+            <Icon name={open ? "close" : "menu"} size={22} />
           </button>
         </div>
       </div>

@@ -2,21 +2,33 @@
 // stand-ins pending client confirmation — edit here and everything updates.
 // Images live in /public/images; replace a file (same name) to swap it in.
 
+/** A heading with a gold-accented word: {pre} <gold> {post} */
+export type Accent = { pre?: string; gold?: string; post?: string };
+
 export type Vertical = {
   slug: string;
   name: string;
   tagline: string;
-  heroTitle: [string, string];
-  heroText: string;
+  hero: { line1: string; line2: Accent; text: string; cta: string };
+  /** Services index page entry — heading line 2's gold part renders italic */
+  index: {
+    line1: string;
+    line2: Accent;
+    text: string;
+    bullets: string[];
+    comingSoon?: boolean;
+  };
   badges: string[];
   about: {
-    title: string;
+    title: Accent;
     text: string;
     stat: { value: string; label: string };
   };
-  features: { title: string; text: string }[];
+  why: { title: Accent; text: string };
+  features: { title: Accent; text: string }[];
+  process: { title: Accent };
   steps: { title: string; text: string }[];
-  cta: { title: string; text: string };
+  cta: { title: string; text: string; button: string };
 };
 
 export const verticals: Vertical[] = [
@@ -24,207 +36,294 @@ export const verticals: Vertical[] = [
     slug: "laundry",
     name: "Laundry",
     tagline: "Laundry done right.",
-    heroTitle: ["PREMIUM CLEANING.", "AVAILABLE NOW"],
-    heroText:
-      "From bedrooms to balconies, our trained team delivers a spotless, healthy space — on your schedule, at a fair price.",
+    hero: {
+      line1: "PREMIUM CLEANING.",
+      line2: { pre: "AVAILABLE ", gold: "NOW" },
+      text: "From boardrooms to bedrooms, Daniliya's certified teams deliver consistently high standards across Lagos and Abuja.",
+      cta: "Book Service",
+    },
+    index: {
+      line1: "Laundry",
+      line2: { pre: "done ", gold: "right." },
+      text: "We pick up, wash, dry, fold, and return your laundry with care. No more laundry day stress — just crisp, clean results delivered to your door.",
+      bullets: [
+        "Same-day express service available",
+        "Pickup from your doorstep",
+        "Hypoallergenic detergent option",
+      ],
+    },
     badges: [
-      "Trusted Professionals",
-      "Flexible Scheduling",
-      "Eco-Friendly Products",
-      "Affordable Pricing",
+      "Trusted Professionals.",
+      "Flexible Scheduling.",
+      "Eco-Friendly Products.",
+      "Affordable Pricing.",
     ],
     about: {
-      title: "A serious standard for cleaning in Nigeria",
-      text: "Daniliya Cleaning Services renders top-notch ironing, washing and dry-cleaning services with experienced hands. Every wash is handled with care, every delivery is on time.",
-      stat: { value: "250+", label: "happy clients across Abuja" },
+      title: { pre: "A serious standard for cleaning in ", gold: "Nigeria." },
+      text: "Daniliya Cleaning Services Limited was built to bring international-grade hygiene practices to Nigerian homes and businesses. Every team is vetted, uniformed and trained — so what you book is what arrives.",
+      stat: {
+        value: "250+",
+        label: "Satisfied clients who trust us with their home or workspace.",
+      },
+    },
+    why: {
+      title: { pre: "Cleaning that goes ", gold: "beyond", post: " expectations." },
+      text: "We combine experience, reliability, and attention to detail to deliver exceptional cleaning services. Our team is dedicated to making every home and workspace spotless, on time, and with complete customer satisfaction.",
     },
     features: [
       {
-        title: "Fast service",
-        text: "We respond quickly and finish on time. Express options for when you need it back tomorrow.",
+        title: { pre: "Fast ", gold: "service" },
+        text: "We respond quickly and finish on time, keeping your space clean when you need it.",
       },
       {
-        title: "Experienced team",
-        text: "Vetted, trained professionals who treat your garments and your home with respect.",
+        title: { pre: "Experienced ", gold: "team" },
+        text: "Vetted, uniformed professionals who treat your home and workspace with respect.",
       },
       {
-        title: "Natural products",
-        text: "Eco-friendly, skin-safe detergents that protect fabrics and the environment.",
+        title: { pre: "Natural ", gold: "Products" },
+        text: "We use eco-friendly supplies that protect your home, your family, and the planet.",
       },
       {
-        title: "Affordable pricing",
+        title: { pre: "Affordable ", gold: "pricing" },
         text: "Transparent rates with no hidden charges. Pay for exactly what you get.",
       },
     ],
+    process: {
+      title: { pre: "Get cleaner space in just three ", gold: "steps." },
+    },
     steps: [
       {
         title: "Book your service",
-        text: "Choose your cleaning service, pick a date and tell us where to come.",
+        text: "Choose your cleaning service, pick a date and time, and tell us your needs — it only takes a few minutes.",
       },
       {
         title: "We do the cleaning",
-        text: "Our team arrives on schedule with everything needed for a thorough job.",
+        text: "Our professional team arrives on time with everything needed to clean your space thoroughly and carefully.",
       },
       {
         title: "Enjoy a fresh space",
-        text: "Walk back into a spotless space — and book your next slot in one tap.",
+        text: "Relax and enjoy a spotless, refreshed, and healthier environment while we handle the hard work.",
       },
     ],
     cta: {
       title: "Ready for a serious clean?",
-      text: "Get a tailored quote within 24 hours. No obligations.",
+      text: "Get a tailored quote within 24 hours — or book a one-off service right now.",
+      button: "Get a Quote",
     },
   },
   {
     slug: "dry-cleaning",
     name: "Dry Cleaning",
     tagline: "Dry cleaning mastery.",
-    heroTitle: ["DRY CLEANING.", "MASTERED"],
-    heroText:
-      "Your finest garments deserve the finest care. Crisp, careful, delivered back to you ready to wear.",
+    hero: {
+      line1: "DRY CLEANING.",
+      line2: { gold: "MASTERED." },
+      text: "Suits, agbadas, gowns and delicate fabrics handled by specialists — collected and returned at your door, ready to wear.",
+      cta: "Schedule Pickup",
+    },
+    index: {
+      line1: "Dry Cleaning",
+      line2: { gold: "mastery." },
+      text: "Your finest garments deserve the finest care. Our dry cleaning process uses professional-grade solvents and techniques developed for Nigerian climate conditions.",
+      bullets: [
+        "Suits, blazers & formal wear",
+        "Delicates, silk & chiffon",
+        "Agbada & traditional wear care",
+      ],
+      comingSoon: true,
+    },
     badges: [
-      "Garment-Safe Process",
-      "Pickup & Delivery",
-      "Stain Specialists",
-      "On-Time, Every Time",
+      "Garment-Safe Process.",
+      "Pickup & Delivery.",
+      "Stain Specialists.",
+      "On-Time, Every Time.",
     ],
     about: {
-      title: "Care your wardrobe can feel",
-      text: "Suits, agbadas, gowns and delicate fabrics handled by specialists using garment-safe processes developed for Nigerian climate conditions.",
-      stat: { value: "48hr", label: "standard turnaround" },
+      title: { pre: "Care your wardrobe can ", gold: "feel." },
+      text: "Your finest garments deserve the finest care. Each piece is assessed and processed according to its fabric — with garment-safe processes developed for Nigerian climate conditions.",
+      stat: { value: "48hr", label: "Standard turnaround on every order." },
+    },
+    why: {
+      title: { pre: "Dry cleaning with ", gold: "obsessive", post: " attention." },
+      text: "From stain mastery to finishing, every garment is handled by specialists who treat your wardrobe like their own — crisp, careful and always on schedule.",
     },
     features: [
       {
-        title: "Stain mastery",
+        title: { pre: "Stain ", gold: "mastery" },
         text: "Targeted treatment for oil, ink and palm-oil stains that regular washing can't touch.",
       },
       {
-        title: "Fabric-first process",
+        title: { pre: "Fabric-first ", gold: "process" },
         text: "Each garment is assessed and processed according to its fabric, not a one-size cycle.",
       },
       {
-        title: "Pickup & delivery",
+        title: { pre: "Pickup & ", gold: "delivery" },
         text: "We collect and return at your door, on your schedule.",
       },
       {
-        title: "Pressed to perfection",
+        title: { pre: "Pressed to ", gold: "perfection" },
         text: "Every item returned crisp, folded or hung exactly how you want it.",
       },
     ],
+    process: {
+      title: { pre: "Fresh garments in three ", gold: "steps." },
+    },
     steps: [
       {
         title: "Schedule a pickup",
-        text: "Tell us what you have and when to collect it.",
+        text: "Tell us what you have and when to collect it — it only takes a minute.",
       },
       {
         title: "We clean with care",
-        text: "Specialist cleaning, stain treatment and finishing.",
+        text: "Specialist cleaning, stain treatment and finishing, fabric by fabric.",
       },
       {
         title: "Delivered back fresh",
-        text: "Your wardrobe returned ready to wear.",
+        text: "Your wardrobe returned ready to wear, on time, every time.",
       },
     ],
     cta: {
-      title: "Give your garments expert care",
-      text: "Book a pickup or request a quote today.",
+      title: "Give your garments expert care.",
+      text: "Book a pickup or request a quote today — we'll respond within 24 hours.",
+      button: "Get a Quote",
     },
   },
   {
     slug: "interior-decoration",
     name: "Interior Decoration",
     tagline: "Where spaces come alive.",
-    heroTitle: ["SPACES THAT", "COME ALIVE"],
-    heroText:
-      "Finish by Daniliya — interior and exterior design, home automation and connectivity, delivered with quiet luxury.",
+    hero: {
+      line1: "SPACES THAT",
+      line2: { pre: "COME ", gold: "ALIVE" },
+      text: "Finish by Daniliya — interior and exterior design, home automation and connectivity, delivered with quiet luxury.",
+      cta: "Book Consultation",
+    },
+    index: {
+      line1: "Interiors that",
+      line2: { pre: "come ", gold: "alive." },
+      text: "Finish by Daniliya turns houses into homes and offices into statements — interior and exterior design, smart automation and premium finishing, managed end to end.",
+      bullets: [
+        "Design consultation & concepts",
+        "Smart home automation & connectivity",
+        "Premium finishing & furniture sourcing",
+      ],
+    },
     badges: [
-      "Design Consultation",
-      "Home Automation",
-      "Premium Finishing",
-      "Project Management",
+      "Design Consultation.",
+      "Home Automation.",
+      "Premium Finishing.",
+      "Project Management.",
     ],
     about: {
-      title: "Finish by Daniliya",
+      title: { pre: "Finish by ", gold: "Daniliya." },
       text: "From a single room refresh to a full architectural finish, we design and deliver spaces that feel as good as they look — homes, offices and commercial spaces.",
-      stat: { value: "100%", label: "design-led, end to end" },
+      stat: { value: "100%", label: "Design-led delivery, from concept to handover." },
+    },
+    why: {
+      title: { pre: "Interiors that feel ", gold: "considered", post: "." },
+      text: "One team accountable from concept to handover — design consultation, curated materials and smart-home integration without the contractor roulette.",
     },
     features: [
       {
-        title: "Design consultation",
+        title: { pre: "Design ", gold: "consultation" },
         text: "Sit with a senior designer and turn your taste into a concrete plan and budget.",
       },
       {
-        title: "Smart home automation",
+        title: { pre: "Smart ", gold: "automation" },
         text: "Lighting, security and internet connectivity designed into the space, not bolted on.",
       },
       {
-        title: "Premium materials",
+        title: { pre: "Premium ", gold: "materials" },
         text: "Curated finishes and furniture sourced for durability and elegance.",
       },
       {
-        title: "Managed delivery",
+        title: { pre: "Managed ", gold: "delivery" },
         text: "One team accountable from concept to handover — no contractor roulette.",
       },
     ],
+    process: {
+      title: { pre: "A transformed space in three ", gold: "steps." },
+    },
     steps: [
       {
         title: "Share your vision",
-        text: "Send us your space, inspiration and budget.",
+        text: "Send us your space, inspiration and budget — we'll take it from there.",
       },
       {
         title: "Approve the design",
-        text: "We present concepts, materials and a clear quote.",
+        text: "We present concepts, materials and a clear quote before any work starts.",
       },
       {
         title: "Watch it come alive",
-        text: "We build, finish and hand over your transformed space.",
+        text: "We build, finish and hand over your transformed space, on schedule.",
       },
     ],
     cta: {
-      title: "Let's transform your space",
-      text: "Book a design consultation or request a quote.",
+      title: "Let's transform your space.",
+      text: "Book a design consultation or request a quote — we'll respond within 24 hours.",
+      button: "Get a Quote",
     },
   },
   {
     slug: "construction",
     name: "Construction",
     tagline: "Built to last. Built by Daniliya.",
-    heroTitle: ["BUILT TO LAST.", "BUILT BY DANILIYA"],
-    heroText:
-      "Residential and commercial construction delivered with engineering discipline, honest timelines and materials that endure.",
+    hero: {
+      line1: "BUILT TO LAST.",
+      line2: { pre: "BUILT BY ", gold: "DANILIYA" },
+      text: "Residential and commercial construction delivered with engineering discipline, honest timelines and materials that endure.",
+      cta: "Brief Our Engineers",
+    },
+    index: {
+      line1: "Construction",
+      line2: { pre: "built to ", gold: "last." },
+      text: "From foundations to finishing, we build with engineering discipline, verified materials and documented milestones — so you always know where your project stands.",
+      bullets: [
+        "Residential & commercial builds",
+        "Transparent bills of quantity",
+        "Stage-by-stage milestone reports",
+      ],
+    },
     badges: [
-      "Certified Engineers",
-      "Transparent Costing",
-      "Quality Materials",
-      "On-Schedule Delivery",
+      "Certified Engineers.",
+      "Transparent Costing.",
+      "Quality Materials.",
+      "On-Schedule Delivery.",
     ],
     about: {
-      title: "Construction with integrity",
+      title: { pre: "Construction with ", gold: "integrity." },
       text: "From foundations to finishing, Daniliya Construction manages your build with documented milestones, verified materials and site supervision you can trust.",
-      stat: { value: "10+", label: "years of combined site experience" },
+      stat: { value: "10+", label: "Years of combined site experience on our teams." },
+    },
+    why: {
+      title: { pre: "Building done ", gold: "properly", post: "." },
+      text: "Structural decisions made by professionals, bills of quantity you can read, and progress reports at every stage — wherever you are.",
     },
     features: [
       {
-        title: "Honest engineering",
+        title: { pre: "Honest ", gold: "engineering" },
         text: "Structural decisions made by professionals, documented and explained.",
       },
       {
-        title: "Transparent costing",
+        title: { pre: "Transparent ", gold: "costing" },
         text: "Bills of quantity you can read, with no surprise variations.",
       },
       {
-        title: "Verified materials",
+        title: { pre: "Verified ", gold: "materials" },
         text: "We buy and test materials openly — what's specified is what's used.",
       },
       {
-        title: "Milestone reporting",
+        title: { pre: "Milestone ", gold: "reporting" },
         text: "Photo and progress reports at every stage, wherever you are.",
       },
     ],
+    process: {
+      title: { pre: "From land to keys in three ", gold: "steps." },
+    },
     steps: [
       {
         title: "Brief us on the project",
-        text: "Land, drawings or just an idea — start the conversation.",
+        text: "Land, drawings or just an idea — start the conversation with our engineers.",
       },
       {
         title: "Agree scope & milestones",
@@ -232,12 +331,13 @@ export const verticals: Vertical[] = [
       },
       {
         title: "We build, you verify",
-        text: "Stage-by-stage delivery with reports until handover.",
+        text: "Stage-by-stage delivery with photo reports until handover.",
       },
     ],
     cta: {
       title: "Planning a build?",
-      text: "Talk to our engineers and get a realistic quote.",
+      text: "Talk to our engineers and get a realistic quote within 24 hours.",
+      button: "Get a Quote",
     },
   },
 ];
@@ -307,7 +407,7 @@ export const products: Product[] = [
     category: "Merch",
     chip: "Marketplace",
     price: 12000,
-    blurb: "Official Daniliya workwear, built for the job.",
+    blurb: "Premium black & gold uniforms for service teams.",
     description:
       "Durable, comfortable branded workwear in the Daniliya black and yellow. Made to handle real work and still look sharp.",
     image: "/images/products/branded-uniform-set.jpg",
@@ -318,7 +418,7 @@ export const products: Product[] = [
     category: "Courses",
     chip: "Digital",
     price: 15000,
-    blurb: "Learn to earn every Monday with the Daniliya network.",
+    blurb: "Master link sharing, conversions and weekly payouts.",
     description:
       "A step-by-step video course on promoting Daniliya products effectively — from your first shared link to consistent weekly payouts.",
     image: "/images/products/affiliate-success-course.jpg",
@@ -335,8 +435,6 @@ export const products: Product[] = [
     image: "/images/products/ghost-boys.jpg",
   },
 ];
-
-export const productCategories = ["All", "Books", "Bundles", "Merch", "Courses"];
 
 export type Testimonial = { name: string; role: string; quote: string };
 
@@ -385,66 +483,168 @@ export const affiliateSteps = [
 
 export const affiliateFeatures = [
   {
-    title: "Weekly Monday payouts",
-    text: "No waiting for 'month end'. Confirmed earnings are queued and paid out every single Monday.",
+    title: "Weekly Monday Payouts",
+    text: "No waiting months for your earnings. Every Monday, your confirmed commissions are disbursed directly to your bank account.",
   },
   {
-    title: "KYC-verified & secure",
-    text: "Every affiliate is identity-verified. Your earnings ledger is permanent and tamper-proof.",
+    title: "KYC-Verified & Secure",
+    text: "All affiliates go through NIN/BVN verification, making this a trusted, fraud-free network. Your identity and earnings are always protected.",
   },
   {
-    title: "Full dashboard visibility",
-    text: "Track your clicks, sales and earnings in real time — and a live countdown to your next payout.",
+    title: "Full Dashboard Visibility",
+    text: "Track every click, every sale, and every naira in real time. Your dashboard shows earnings, pending payouts, and a live countdown to Monday.",
   },
   {
-    title: "Free training programme",
-    text: "Learn exactly how to promote before you start. No guesswork, no spam tactics.",
+    title: "Free Training Programme",
+    text: "Get access to a full affiliate training course with videos, content, and marketing tips. Learn exactly how to sell effectively.",
   },
   {
-    title: "Per-product payment links",
-    text: "A unique link for every product you promote, so every sale is attributed to you. Always.",
+    title: "Per-Product Payment Links",
+    text: "You get a unique payment link for every product — not just a referral code. Customers click your link and pay directly. Every sale is attributed to you.",
   },
   {
-    title: "No earning cap",
-    text: "Flat commission on every sale you drive. Ten sales, ten commissions. No ceilings.",
-  },
-];
-
-export const customerSteps = [
-  {
-    title: "Browse & discover",
-    text: "Explore all the Daniliya services from the homepage or navigate directly to the service you need. Every vertical has its own page with portfolio, pricing and CTAs.",
-  },
-  {
-    title: "Book or buy",
-    text: "Submit a service booking, request a tailored quote, or purchase a product directly from the store. Checkout is powered by Paystack — fast, secure, and Nigerian-native.",
-  },
-  {
-    title: "Get confirmation",
-    text: "You receive an instant confirmation via email and WhatsApp. For service bookings, we follow up within 2 hours. For orders, you get a tracking reference immediately.",
-  },
-  {
-    title: "Track & receive",
-    text: "Track your order or service status in real time. From 'Pending' to 'Confirmed' to 'In Progress' to 'Delivered'. We keep you updated at every stage without you asking.",
+    title: "No Earning Cap",
+    text: "Your commission scales with your sales. There is no ceiling on what you can earn. The more you refer, the more you make — simple.",
   },
 ];
 
-export const influencerSteps = [
+/** Horizontal stepper on the affiliates landing page.
+ * Icons are full-colour SVG slots in /public/icons. */
+export const affiliateStepper = [
+  { icon: "stepper-register", title: "Register", text: "Sign up free — takes 3 minutes" },
+  { icon: "stepper-kyc", title: "KYC", text: "NIN/BVN verification via Smile ID" },
+  { icon: "stepper-train", title: "Train", text: "Complete the affiliate training course" },
+  { icon: "stepper-links", title: "Get Links", text: "Unique links per product, ready to share" },
+  { icon: "stepper-paid", title: "Get Paid", text: "Every Monday, no exceptions" },
+];
+
+export type HowStep = { title: Accent; text: string; img: string };
+export type HowTab = {
+  key: string;
+  label: string;
+  /** "grid" = 2×2 checkerboard cards · "timeline" = alternating center-line */
+  layout: "grid" | "timeline";
+  steps: HowStep[];
+};
+
+export const howItWorksTabs: HowTab[] = [
   {
-    title: "Apply to the programme",
-    text: "Tell us about your platform, niche and audience. Our team reviews and approves influencers personally.",
+    key: "customers",
+    label: "For Customers",
+    layout: "grid",
+    steps: [
+      {
+        title: { pre: "Browse & discover" },
+        text: "Explore all five Daniliya service verticals from the homepage or navigate directly to the service you need. Each vertical has its own page with portfolio, pricing, and CTA.",
+        img: "/images/how-it-works/customer-step-1.jpg",
+      },
+      {
+        title: { pre: "Book or buy" },
+        text: "Submit a service booking, request a tailored quote, or purchase a product directly from the store. Checkout is powered by Paystack — fast, secure, and Nigerian-native.",
+        img: "/images/how-it-works/customer-step-2.jpg",
+      },
+      {
+        title: { pre: "Get confirmation" },
+        text: "You receive an instant confirmation via email and WhatsApp. For service bookings, we follow up within 2 hours. For orders, you get a tracking reference immediately.",
+        img: "/images/how-it-works/customer-step-3.jpg",
+      },
+      {
+        title: { pre: "Track & receive" },
+        text: "Track your order or service status in real time. From Pending → Confirmed → In Progress → Delivered. We keep you updated at every stage via WhatsApp and email.",
+        img: "/images/how-it-works/customer-step-4.jpg",
+      },
+    ],
   },
   {
-    title: "Receive a campaign",
-    text: "Get assigned campaigns with a clear brief, your own tracked link and a unique promo code.",
+    key: "affiliates",
+    label: "For Affiliates",
+    layout: "timeline",
+    steps: [
+      {
+        title: { pre: "Register & submit ", gold: "KYC" },
+        text: "Create your account and verify your identity with your NIN and bank details. It keeps the network safe and your payouts smooth.",
+        img: "/images/how-it-works/affiliate-step-1.jpg",
+      },
+      {
+        title: { pre: "Complete the ", gold: "training" },
+        text: "A short, practical tutorial on how the programme works and how to promote products honestly and effectively.",
+        img: "/images/how-it-works/affiliate-step-2.jpg",
+      },
+      {
+        title: { pre: "Pass the ", gold: "assessment" },
+        text: "A quick quiz to confirm you're ready. Score the pass mark and you're activated instantly.",
+        img: "/images/how-it-works/affiliate-step-3.jpg",
+      },
+      {
+        title: { pre: "Get your ", gold: "links" },
+        text: "Receive your unique payment links for every product. Share them anywhere — WhatsApp, Instagram, your status.",
+        img: "/images/how-it-works/affiliate-step-4.jpg",
+      },
+      {
+        title: { pre: "Earn every ", gold: "Monday" },
+        text: "Every confirmed sale earns you a fixed commission. Payouts go out every Monday — watch the countdown on your dashboard.",
+        img: "/images/how-it-works/affiliate-step-5.jpg",
+      },
+    ],
   },
   {
-    title: "Create & share",
-    text: "Post on your platforms using your link and code. Every click and conversion is attributed to you.",
+    key: "influencers",
+    label: "For Influencers",
+    layout: "timeline",
+    steps: [
+      {
+        title: { pre: "Apply as an ", gold: "influencer" },
+        text: "Tell us about your platform, niche and audience. Our team reviews and approves influencers personally.",
+        img: "/images/how-it-works/influencer-step-1.jpg",
+      },
+      {
+        title: { pre: "Get ", gold: "approved" },
+        text: "The Daniliya admin team reviews your profile and approves or requests more information. You'll be notified via email and SMS within 48 hours.",
+        img: "/images/how-it-works/influencer-step-2.jpg",
+      },
+      {
+        title: { pre: "Receive campaign ", gold: "assignments" },
+        text: "Admin creates campaigns and assigns you to those that match your niche and audience. Each assignment comes with a full content brief, brand assets, and your unique UTM link or promo code.",
+        img: "/images/how-it-works/influencer-step-3.jpg",
+      },
+      {
+        title: { pre: "Post & ", gold: "track" },
+        text: "Create your content and post using your unique link or code. Your dashboard shows real-time clicks, conversions, and earnings per campaign.",
+        img: "/images/how-it-works/influencer-step-4.jpg",
+      },
+      {
+        title: { pre: "Get paid ", gold: "Monday" },
+        text: "Influencer earnings follow the same Monday payout cycle as affiliates. Flat-rate or commission-based — configured per campaign by admin.",
+        img: "/images/how-it-works/influencer-step-5.jpg",
+      },
+    ],
   },
   {
-    title: "Get paid per campaign",
-    text: "Earn a flat fee or commission per campaign, paid out in the same trusted Monday cycle.",
+    key: "vendors",
+    label: "For Vendors",
+    layout: "grid",
+    steps: [
+      {
+        title: { pre: "Register as a vendor" },
+        text: "Submit your business details — name, contact, bank account, and product categories. The registration is free and takes under 5 minutes.",
+        img: "/images/how-it-works/vendor-step-1.jpg",
+      },
+      {
+        title: { pre: "List your products" },
+        text: "Add your products with titles, descriptions, prices, and up to 6 images each. Listings are saved as drafts until admin review.",
+        img: "/images/how-it-works/vendor-step-2.jpg",
+      },
+      {
+        title: { pre: "Admin approves & goes live" },
+        text: "The Daniliya team reviews your listing and approves it for the marketplace. Once live, your product is immediately available for affiliates and influencers to promote.",
+        img: "/images/how-it-works/vendor-step-3.jpg",
+      },
+      {
+        title: { pre: "Track sales & revenue" },
+        text: "Your vendor dashboard shows all orders, fulfilment status, gross revenue, and commission deducted. Export reports anytime.",
+        img: "/images/how-it-works/vendor-step-4.jpg",
+      },
+    ],
   },
 ];
 

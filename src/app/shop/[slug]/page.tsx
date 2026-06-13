@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+import Ambient from "@/components/Ambient";
+import Icon from "@/components/Icon";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -27,6 +29,7 @@ export default async function ProductPage({ params }: Props) {
 
   return (
     <>
+      <Ambient theme="shop" />
       <section className="bg-ink text-white">
         <div className="mx-auto max-w-7xl px-4 py-4 text-sm text-white/50 sm:px-6">
           <Link href="/shop" className="hover:text-brand">
@@ -59,9 +62,16 @@ export default async function ProductPage({ params }: Props) {
               {product.description}
             </p>
             <ul className="mt-6 space-y-2 text-sm text-white/70">
-              <li>✓ Nationwide delivery within 2–5 working days</li>
-              <li>✓ Secure payment powered by Paystack</li>
-              <li>✓ Instant order confirmation & tracking reference</li>
+              {[
+                "Nationwide delivery within 2–5 working days",
+                "Secure payment powered by Paystack",
+                "Instant order confirmation & tracking reference",
+              ].map((item) => (
+                <li key={item} className="flex items-center gap-2.5">
+                  <Icon name="check" size={14} className="text-brand" />
+                  {item}
+                </li>
+              ))}
             </ul>
             <div className="mt-8 flex flex-wrap gap-4">
               <Link

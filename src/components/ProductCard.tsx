@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import Icon from "@/components/Icon";
 import type { Product } from "@/lib/data";
 import { naira } from "@/lib/format";
 
@@ -46,7 +47,7 @@ export default function ProductCard({ product }: { product: Product }) {
             href="/checkout"
             className="inline-flex items-center gap-1.5 rounded-lg bg-brand px-4 py-2.5 text-[13px] font-bold text-white transition-opacity hover:opacity-90"
           >
-            <span aria-hidden>+</span> Add to Cart
+            <Icon name="plus" size={14} /> Add to Cart
           </Link>
         </div>
       </div>

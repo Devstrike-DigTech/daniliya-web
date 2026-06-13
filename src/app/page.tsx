@@ -2,8 +2,15 @@ import Image from "next/image";
 import Link from "next/link";
 import SectionTag from "@/components/SectionTag";
 import Btn from "@/components/Btn";
+import Icon from "@/components/Icon";
 import ProductCard from "@/components/ProductCard";
-import { products, testimonials } from "@/lib/data";
+import Ambient from "@/components/Ambient";
+import Reveal from "@/components/Reveal";
+import HeroSlideshow from "@/components/HeroSlideshow";
+import PossibilitiesStack from "@/components/PossibilitiesStack";
+import AffiliateOrbit from "@/components/AffiliateOrbit";
+import TestimonialMarquee from "@/components/TestimonialMarquee";
+import { products } from "@/lib/data";
 
 const serviceCards = [
   {
@@ -26,6 +33,7 @@ const serviceCards = [
 export default function HomePage() {
   return (
     <>
+      <Ambient theme="home" />
       {/* Hero */}
       <section className="relative bg-ink text-white">
         <div className="pinstripes absolute inset-0" aria-hidden />
@@ -90,26 +98,17 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Hero image — breaks out of the dark band */}
+      {/* Hero image — breaks out of the dark band, crossfading slideshow */}
       <div className="bg-[linear-gradient(to_bottom,var(--color-ink)_0,var(--color-ink)_168px,transparent_168px)] pt-14">
         <div className="mx-auto max-w-[1376px] px-4 sm:px-8">
-          <div className="relative aspect-[1360/530] min-h-[220px] w-full overflow-hidden rounded-2xl">
-            <Image
-              src="/images/home/hero.jpg"
-              alt="Daniliya premium home services"
-              fill
-              priority
-              sizes="100vw"
-              className="object-cover"
-            />
-          </div>
+          <HeroSlideshow />
         </div>
       </div>
 
       {/* One brand, infinite possibilities */}
       <section className="bg-paper">
         <div className="mx-auto grid max-w-[1376px] items-center gap-14 px-4 py-24 sm:px-8 lg:grid-cols-[1.05fr_0.95fr]">
-          <div>
+          <Reveal>
             <SectionTag>About Daniliya</SectionTag>
             <h2 className="mt-5 text-[36px] font-bold leading-tight sm:text-[40px]">
               One brand, infinite
@@ -131,55 +130,12 @@ export default function HomePage() {
                 How it Works
               </Btn>
             </div>
-          </div>
+          </Reveal>
 
-          {/* Fanned photo cards + gold arcs */}
-          <div className="relative mx-auto h-[420px] w-full max-w-[480px] sm:h-[500px]">
-            <svg
-              aria-hidden
-              viewBox="0 0 220 110"
-              className="absolute -bottom-6 left-2 w-56 text-brand"
-              fill="none"
-            >
-              <path
-                d="M10 110a100 100 0 0 1 200 0"
-                stroke="currentColor"
-                strokeOpacity="0.5"
-              />
-              <path
-                d="M30 110a80 80 0 0 1 160 0"
-                stroke="currentColor"
-                strokeOpacity="0.35"
-              />
-              <path
-                d="M50 110a60 60 0 0 1 120 0"
-                stroke="currentColor"
-                strokeOpacity="0.2"
-              />
-            </svg>
-            <div
-              aria-hidden
-              className="absolute left-0 top-12 h-[300px] w-[220px] -rotate-[14deg] rounded-2xl bg-teal/25 sm:h-[360px] sm:w-[260px]"
-            />
-            <div className="absolute left-14 top-6 h-[320px] w-[230px] -rotate-[6deg] overflow-hidden rounded-2xl shadow-lg sm:h-[390px] sm:w-[280px]">
-              <Image
-                src="/images/home/possibilities-2.jpg"
-                alt="Daniliya at work"
-                fill
-                sizes="280px"
-                className="object-cover"
-              />
-            </div>
-            <div className="absolute right-0 top-0 h-[360px] w-[260px] rotate-[3deg] overflow-hidden rounded-2xl shadow-xl sm:h-[440px] sm:w-[320px]">
-              <Image
-                src="/images/home/possibilities-1.jpg"
-                alt="The Daniliya standard"
-                fill
-                sizes="320px"
-                className="object-cover"
-              />
-            </div>
-          </div>
+          {/* Fanned photo cards + gold arcs — shuffles every few seconds */}
+          <Reveal delay={150}>
+            <PossibilitiesStack />
+          </Reveal>
         </div>
       </section>
 
@@ -200,6 +156,7 @@ export default function HomePage() {
             </Btn>
           </div>
 
+          <Reveal>
           <div className="mt-10 grid gap-8 lg:grid-cols-2">
             {serviceCards.map((card) => (
               <div
@@ -234,20 +191,21 @@ export default function HomePage() {
                       href={card.href}
                       className="inline-flex items-center gap-2 rounded-lg bg-brand px-5 py-2.5 text-sm font-bold text-white transition-opacity hover:opacity-90"
                     >
-                      {card.cta} <span aria-hidden>→</span>
+                      {card.cta} <Icon name="arrow-right" size={15} />
                     </Link>
                   </div>
                 </div>
               </div>
             ))}
           </div>
+          </Reveal>
         </div>
       </section>
 
       {/* Share a link. Get paid Monday. */}
       <section className="bg-paper">
         <div className="mx-auto grid max-w-[1376px] items-center gap-14 px-4 py-24 sm:px-8 lg:grid-cols-2">
-          <div>
+          <Reveal>
             <SectionTag>Affiliate programme</SectionTag>
             <div className="mt-4 flex items-center gap-3">
               <div className="flex items-center">
@@ -293,52 +251,12 @@ export default function HomePage() {
                 Join as Influencer
               </Btn>
             </div>
-          </div>
+          </Reveal>
 
-          {/* Avatar collage */}
-          <div className="relative mx-auto hidden h-[480px] w-full max-w-[480px] lg:block">
-            <div
-              aria-hidden
-              className="absolute left-[88px] top-[150px] h-28 w-24 bg-[radial-gradient(circle,var(--color-brand)_1.5px,transparent_1.5px)] [background-size:14px_14px]"
-            />
-            <div
-              aria-hidden
-              className="absolute left-[270px] top-[260px] h-40 w-40 rounded-2xl bg-cream"
-            />
-            {/* center portrait */}
-            <span className="absolute left-[150px] top-[110px] block h-[250px] w-[250px] overflow-hidden rounded-3xl shadow-lg">
-              <Image
-                src="/images/avatars/avatar-1.jpg"
-                alt="Daniliya affiliate"
-                fill
-                sizes="250px"
-                className="object-cover"
-              />
-            </span>
-            {/* satellites */}
-            {[
-              { src: 2, cls: "left-[210px] top-[15px] h-20 w-20" },
-              { src: 3, cls: "left-[55px] top-[55px] h-[72px] w-[72px]" },
-              { src: 4, cls: "right-[55px] top-[70px] h-20 w-20" },
-              { src: 5, cls: "right-[30px] top-[200px] h-[76px] w-[76px]" },
-              { src: 6, cls: "left-[20px] top-[250px] h-[84px] w-[84px]" },
-              { src: 7, cls: "left-[170px] bottom-[30px] h-20 w-20" },
-              { src: 8, cls: "left-[280px] top-[280px] h-[88px] w-[88px]" },
-            ].map((a) => (
-              <span
-                key={a.src}
-                className={`absolute block overflow-hidden rounded-2xl shadow-md ${a.cls}`}
-              >
-                <Image
-                  src={`/images/avatars/avatar-${a.src}.jpg`}
-                  alt=""
-                  fill
-                  sizes="90px"
-                  className="object-cover"
-                />
-              </span>
-            ))}
-          </div>
+          {/* Avatar collage — satellites orbit the center portrait */}
+          <Reveal delay={150}>
+            <AffiliateOrbit />
+          </Reveal>
         </div>
       </section>
 
@@ -357,8 +275,10 @@ export default function HomePage() {
             </Btn>
           </div>
           <div className="mt-10 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
-            {products.slice(0, 3).map((p) => (
-              <ProductCard key={p.slug} product={p} />
+            {products.slice(0, 3).map((p, i) => (
+              <Reveal key={p.slug} delay={i * 130}>
+                <ProductCard product={p} />
+              </Reveal>
             ))}
           </div>
         </div>
@@ -369,58 +289,8 @@ export default function HomePage() {
         <h2 className="text-center text-[36px] font-bold sm:text-[36px]">
           Nigerians who chose <span className="text-brand">Daniliya</span>
         </h2>
-        <div className="mt-12 space-y-6">
-          {[0, 1].map((row) => (
-            <div
-              key={row}
-              className={`flex gap-6 overflow-x-auto px-4 lg:overflow-visible lg:px-0 ${
-                row === 0 ? "lg:-ml-40" : "lg:-ml-10"
-              }`}
-            >
-              {[...testimonials, ...testimonials].map((t, i) => (
-                <figure
-                  key={`${t.name}-${i}`}
-                  className="relative w-[440px] shrink-0 rounded-[20px] bg-coal p-7 text-white"
-                >
-                  <div
-                    className="flex gap-1 text-[15px] text-brand"
-                    aria-hidden
-                  >
-                    {"★★★★★"}
-                  </div>
-                  <blockquote className="mt-4 max-w-[300px] text-[17px] leading-relaxed">
-                    &ldquo;{t.quote}&rdquo;
-                  </blockquote>
-                  <figcaption className="mt-6 flex items-center gap-3">
-                    <span className="relative h-10 w-10 overflow-hidden rounded-full">
-                      <Image
-                        src={`/images/avatars/avatar-${(i % 3) + 1}.jpg`}
-                        alt={t.name}
-                        fill
-                        sizes="40px"
-                        className="object-cover"
-                      />
-                    </span>
-                    <span>
-                      <span className="block text-[15px] font-bold">
-                        {t.name}
-                      </span>
-                      <span className="block text-xs text-white/50">
-                        {t.role}
-                      </span>
-                    </span>
-                  </figcaption>
-                  <span
-                    aria-hidden
-                    className="absolute bottom-4 right-7 font-serif text-[110px] leading-none text-white"
-                  >
-                    &rdquo;
-                  </span>
-                </figure>
-              ))}
-            </div>
-          ))}
-        </div>
+        {/* opposite-direction marquee rows */}
+        <TestimonialMarquee />
       </section>
 
       {/* Start earning CTA */}
@@ -449,21 +319,9 @@ export default function HomePage() {
             />
           </div>
 
-          <div className="py-12 lg:py-14">
+          <Reveal className="py-12 lg:py-14">
             <p className="flex items-center gap-2 text-sm font-bold text-white">
-              <svg
-                width="16"
-                height="16"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                aria-hidden
-              >
-                <circle cx="12" cy="8" r="4" />
-                <path d="M4 21c0-4 3.6-6 8-6s8 2 8 6" />
-              </svg>
+              <Icon name="user" size={16} />
               Affiliate programme
             </p>
             <h2 className="mt-4 text-[34px] font-bold leading-tight text-white sm:text-[40px]">
@@ -479,9 +337,9 @@ export default function HomePage() {
               href="/affiliates"
               className="mt-7 inline-flex items-center gap-2 rounded-xl bg-coal px-10 py-4 text-[15px] font-bold text-white transition-opacity hover:opacity-90"
             >
-              Join Now <span aria-hidden>→</span>
+              Join Now <Icon name="arrow-right" size={15} />
             </Link>
-          </div>
+          </Reveal>
         </div>
       </section>
     </>

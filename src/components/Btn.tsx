@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Icon from "@/components/Icon";
 
 const variants = {
   gold: "bg-brand text-white hover:opacity-90",
@@ -25,7 +26,7 @@ export default function Btn({
       className={`inline-flex items-center justify-center gap-2 rounded-lg px-7 py-3.5 text-[15px] font-bold transition-all ${variants[variant]}`}
     >
       {children}
-      {arrow && <span aria-hidden>→</span>}
+      {arrow && <Icon name="arrow-right" size={16} />}
     </Link>
   );
 }

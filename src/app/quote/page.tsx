@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
-import SectionTag from "@/components/SectionTag";
+import Ambient from "@/components/Ambient";
+import Icon from "@/components/Icon";
 import ContactCards from "@/components/ContactCards";
 import { verticals } from "@/lib/data";
 
@@ -14,14 +15,17 @@ const inputStyle =
 export default function QuotePage() {
   return (
     <section className="bg-ink">
+      <Ambient theme="contact" />
       <div className="mx-auto grid max-w-7xl lg:grid-cols-[1fr_1.1fr]">
         {/* Left — dark info panel */}
-        <div className="px-4 py-16 text-white sm:px-6 lg:py-20">
-          <SectionTag>Quote request</SectionTag>
-          <h1 className="mt-6 text-4xl font-bold sm:text-5xl">
+        <div className="fade-up px-4 py-16 text-white sm:px-6 lg:py-20">
+          <span className="inline-flex rounded-full bg-brand/15 px-5 py-2.5 text-[15px] font-bold text-brand">
+            Quote Request
+          </span>
+          <h1 className="mt-7 text-[44px] font-bold leading-none sm:text-[56px] lg:text-[64px]">
             GET A <span className="text-brand">QUOTE</span>
           </h1>
-          <p className="mt-4 max-w-sm text-white/60">
+          <p className="mt-5 max-w-md text-[15px] leading-relaxed text-white/75">
             Tell us what you need and we&apos;ll respond with a tailored quote
             within 24 hours.
           </p>
@@ -31,11 +35,11 @@ export default function QuotePage() {
         </div>
 
         {/* Right — form */}
-        <div className="bg-paper px-4 py-16 sm:px-8 lg:py-20">
-          <h2 className="text-3xl font-bold">
+        <div className="fade-up fade-up-1 bg-paper px-4 py-16 sm:px-8 lg:py-20">
+          <h2 className="text-[32px] font-bold sm:text-[40px]">
             Tell us about the <span className="text-gold">job</span>
           </h2>
-          <p className="mt-2 text-sm text-ink/60">
+          <p className="mt-2 text-[15px] text-ink/60">
             We&apos;ll respond with a tailored quote within 24 hours.
           </p>
 
@@ -99,8 +103,9 @@ export default function QuotePage() {
             </div>
             <button
               type="submit"
-              className="w-full rounded-full bg-brand py-4 text-sm font-bold text-ink transition-opacity hover:opacity-90"
+              className="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-brand py-4 text-sm font-bold text-white transition-opacity hover:opacity-90"
             >
+              <Icon name="send" size={16} />
               Send Message
             </button>
           </form>

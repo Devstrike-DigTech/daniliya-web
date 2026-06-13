@@ -41,7 +41,7 @@ placeholder.
 ```
 public/images/
 ├── home/
-│   ├── hero.jpg                      # homepage hero (1600×1100)
+│   ├── hero-1.jpg … hero-3.jpg       # homepage hero slideshow (1600×1100, crossfades)
 │   ├── possibilities-1.jpg           # "One brand" tall image (900×1100)
 │   ├── possibilities-2.jpg           # "One brand" wide image (900×700)
 │   ├── service-laundry.jpg           # service cards (1000×750 each)
@@ -54,7 +54,8 @@ public/images/
 ├── verticals/{laundry,dry-cleaning,interior-decoration,construction}/
 │   ├── hero.jpg                      # 1600×900
 │   ├── about.jpg                     # 1000×800
-│   └── gallery-1.jpg … gallery-3.jpg # 800×600
+│   ├── gallery-1.jpg … gallery-3.jpg # 800×600
+│   └── cta-person.png                # CTA cutout — MUST be transparent PNG (560×800)
 ├── products/
 │   ├── the-daniliya-method.jpg       # 900×1200 (book cover)
 │   ├── ghost-boys.jpg                # 900×1200 (book cover)
@@ -64,8 +65,10 @@ public/images/
 │   └── affiliate-success-course.jpg      # 900×900
 ├── how-it-works/
 │   ├── hero-1.jpg … hero-3.jpg           # 800×600
-│   ├── customer-step-1.jpg … 4.jpg       # 1000×700
-│   └── affiliate-step-1.jpg … 5.jpg      # 1000×700
+│   ├── customer-step-1.jpg … 4.jpg       # 1000×700 (UI screenshots)
+│   ├── affiliate-step-1.jpg … 5.jpg      # 1000×700 (UI screenshots)
+│   ├── influencer-step-1.jpg … 5.jpg     # 1000×700 (UI screenshots)
+│   └── vendor-step-1.jpg … 4.jpg         # 1000×700 (UI screenshots)
 └── affiliates/hero.jpg               # 1400×800
 ```
 
@@ -83,3 +86,33 @@ client confirmation (see comments in that file).
 - Quote/contact form submission (`POST /hub/quote-requests`)
 - Real cart, checkout, Paystack payment
 - Auth, affiliate/influencer/vendor/admin dashboards
+
+## Replacing the icons
+
+Every UI icon loads from `public/icons/<name>.svg` — replace a file (same
+name) and it updates everywhere. Two kinds:
+
+- **Tinted** (most): rendered via CSS mask and coloured by context (gold on
+  dark, white on gold, etc.). Download any **single-colour** SVG — its own
+  colour is ignored, only the shape matters.
+- **Full-colour** (stepper + contact cards): rendered as-is. Download
+  colourful SVGs for these.
+
+| File | Used for / where it appears |
+|---|---|
+| `arrow-right.svg` | every arrow: pill buttons, Learn More, Join Now, card CTAs (site-wide) |
+| `plus.svg` | "+ Add to Cart" on product cards |
+| `check.svg` | checkmark bullets (vertical pages, product detail, order success) |
+| `star.svg` | testimonial ratings (home), book rating (shop hero) |
+| `cart.svg` | header cart button |
+| `menu.svg` / `close.svg` | mobile hamburger / close |
+| `search.svg` | shop search field |
+| `sort.svg` | shop price-sort button |
+| `clock.svg` | "Coming Soon" pill (services page) |
+| `send.svg` | Send Message buttons on /contact and /quote |
+| `user.svg` | "Affiliate programme" tag in home CTA band |
+| `feature-fast.svg` `feature-team.svg` `feature-natural.svg` `feature-pricing.svg` | Why-Choose-Us checkerboard cards on all 4 service pages |
+| `step-book.svg` `step-clean.svg` `step-fresh.svg` | Our-Process step cards on all 4 service pages |
+| `affiliate-payouts.svg` `affiliate-secure.svg` `affiliate-dashboard.svg` `affiliate-training.svg` `affiliate-links.svg` `affiliate-nocap.svg` | "Why join Daniliya" cards on /affiliates |
+| **Full-colour:** `stepper-register.svg` `stepper-kyc.svg` `stepper-train.svg` `stepper-links.svg` `stepper-paid.svg` | 5-step earnings stepper on /affiliates |
+| **Full-colour:** `contact-whatsapp.svg` `contact-email.svg` `contact-location.svg` `contact-time.svg` | info cards on /contact and /quote |
