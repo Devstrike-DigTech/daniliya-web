@@ -6,6 +6,7 @@ import Ambient from "@/components/Ambient";
 import Reveal from "@/components/Reveal";
 import Icon from "@/components/Icon";
 import { affiliateFeatures, affiliateStepper } from "@/lib/data";
+import { portals } from "@/lib/portals";
 
 export const metadata: Metadata = {
   title: "Affiliate Programme",
@@ -50,12 +51,12 @@ export default function AffiliatesPage() {
                 commission on every single sale — paid every Monday.
               </p>
               <div className="mt-7 flex flex-wrap gap-4">
-                <Link
-                  href="/contact"
+                <a
+                  href={`${portals.affiliate}/join/signup`}
                   className="rounded-lg bg-brand px-7 py-3.5 text-[15px] font-bold text-white transition-opacity hover:opacity-90"
                 >
                   Register for free
-                </Link>
+                </a>
                 <Link
                   href="/how-it-works"
                   className="rounded-lg border border-white/70  px-7 py-3.5 text-[15px] font-bold text-white transition-colors hover:bg-white/20"

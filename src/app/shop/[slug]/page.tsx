@@ -5,6 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import ProductCard from "@/components/ProductCard";
+import ProductBuyBox from "@/components/ProductBuyBox";
 import { products } from "@/lib/data";
 import { naira } from "@/lib/format";
 
@@ -20,6 +21,12 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return { title: product ? product.title : "Product" };
 }
 
+const trust = [
+  { icon: "truck", text: "Nationwide delivery via verified couriers" },
+  { icon: "wallet", text: "Paystack secure checkout — Naira" },
+  { icon: "check", text: "Affiliate referrals tracked automatically" },
+];
+
 export default async function ProductPage({ params }: Props) {
   const { slug } = await params;
   const product = products.find((p) => p.slug === slug);
@@ -30,15 +37,19 @@ export default async function ProductPage({ params }: Props) {
   return (
     <>
       <Ambient theme="shop" />
+
+      {/* Detail — dark band */}
       <section className="bg-ink text-white">
-        <div className="mx-auto max-w-7xl px-4 py-4 text-sm text-white/50 sm:px-6">
-          <Link href="/shop" className="hover:text-brand">
-            Book & Shop
-          </Link>{" "}
-          / <span className="text-white/80">{product.title}</span>
+        <div className="mx-auto max-w-[1376px] px-4 pt-8 sm:px-8">
+          <Link
+            href="/shop"
+            className="inline-flex items-center gap-2 text-[15px] font-bold text-brand transition-opacity hover:opacity-80"
+          >
+            <Icon name="arrow-left" size={18} /> Go Back
+          </Link>
         </div>
-        <div className="mx-auto grid max-w-7xl items-center gap-10 px-4 pb-16 pt-6 sm:px-6 lg:grid-cols-2">
-          <div className="relative mx-auto aspect-square w-full max-w-lg overflow-hidden rounded-2xl">
+        <div className="mx-auto grid max-w-[1376px] items-center gap-12 px-4 pb-20 pt-8 sm:px-8 lg:grid-cols-2">
+          <div className="fade-up relative aspect-[5/4] w-full overflow-hidden rounded-2xl">
             <Image
               src={product.image}
               alt={product.title}
@@ -47,56 +58,50 @@ export default async function ProductPage({ params }: Props) {
               sizes="(max-width: 1024px) 100vw, 50vw"
               className="object-cover"
             />
+            <div
+              aria-hidden
+              className="absolute -bottom-2 -left-2 h-16 w-16 bg-[repeating-linear-gradient(135deg,var(--color-brand)_0,var(--color-brand)_4px,transparent_4px,transparent_9px)]"
+            />
           </div>
-          <div>
-            <p className="text-xs uppercase tracking-wide text-brand">
-              {product.category}
-            </p>
-            <h1 className="mt-2 text-3xl font-bold sm:text-4xl">
+          <div className="fade-up fade-up-1">
+            <h1 className="text-[36px] font-bold leading-tight sm:text-[44px]">
               {product.title}
             </h1>
-            <p className="mt-3 text-3xl font-bold text-brand">
+            <p className="mt-3 text-[32px] font-bold text-brand">
               {naira(product.price)}
             </p>
-            <p className="mt-5 max-w-lg leading-relaxed text-white/60">
+            <p className="mt-5 max-w-lg text-[15px] leading-relaxed text-white/70">
               {product.description}
             </p>
-            <ul className="mt-6 space-y-2 text-sm text-white/70">
-              {[
-                "Nationwide delivery within 2–5 working days",
-                "Secure payment powered by Paystack",
-                "Instant order confirmation & tracking reference",
-              ].map((item) => (
-                <li key={item} className="flex items-center gap-2.5">
-                  <Icon name="check" size={14} className="text-brand" />
-                  {item}
-                </li>
+
+            <ProductBuyBox slug={product.slug} price={product.price} />
+
+            <div className="mt-8 space-y-3 rounded-2xl bg-white/5 p-6 ring-1 ring-white/10">
+              {trust.map((t) => (
+                <p
+                  key={t.text}
+                  className="flex items-center gap-3 text-[14px] text-white/85"
+                >
+                  <Icon name={t.icon} size={18} className="text-brand" />
+                  {t.text}
+                </p>
               ))}
-            </ul>
-            <div className="mt-8 flex flex-wrap gap-4">
-              <Link
-                href="/checkout"
-                className="rounded-full bg-brand px-8 py-4 text-sm font-bold text-ink transition-opacity hover:opacity-90"
-              >
-                Buy Now
-              </Link>
-              <Link
-                href="/affiliates"
-                className="rounded-full border border-white/25 px-8 py-4 text-sm font-bold transition-colors hover:border-brand hover:text-brand"
-              >
-                Earn by selling this
-              </Link>
             </div>
           </div>
         </div>
       </section>
 
-      <section className="mx-auto max-w-7xl px-4 py-20 sm:px-6">
-        <h2 className="text-2xl font-bold sm:text-3xl">Similar Products</h2>
-        <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {similar.map((p) => (
-            <ProductCard key={p.slug} product={p} />
-          ))}
+      {/* Similar products */}
+      <section className="bg-[#121212] text-white">
+        <div className="mx-auto max-w-[1376px] px-4 py-20 sm:px-8">
+          <h2 className="text-center text-[28px] font-bold sm:text-[34px]">
+            Similar Products
+          </h2>
+          <div className="mt-10 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+            {similar.map((p) => (
+              <ProductCard key={p.slug} product={p} tone="dark" />
+            ))}
+          </div>
         </div>
       </section>
     </>

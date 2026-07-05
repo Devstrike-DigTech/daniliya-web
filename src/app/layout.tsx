@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { DM_Sans } from "next/font/google";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import { CartProvider } from "@/components/CartContext";
 import "./globals.css";
 
 // Fallback while the real Product Sans files are not yet in public/fonts/
@@ -28,9 +29,11 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${dmSans.variable} h-full antialiased`}>
       <body className="min-h-full flex flex-col">
-        <Header />
-        <main className="flex-1">{children}</main>
-        <Footer />
+        <CartProvider>
+          <Header />
+          <main className="flex-1">{children}</main>
+          <Footer />
+        </CartProvider>
       </body>
     </html>
   );

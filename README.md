@@ -20,8 +20,12 @@ npm run dev    # http://localhost:3000
 | `/affiliates` | Affiliate programme landing |
 | `/quote` | Get a Quote form |
 | `/contact` | Contact form |
-| `/checkout` | Checkout (static demo until commerce API is wired) |
-| `/order/success` | Order confirmation (static demo) |
+| `/cart` | Cart — live, persisted (localStorage), shared across the site |
+| `/checkout` | Checkout — reads the live cart; Delivery/Pickup + Pay-now/PoD toggles |
+| `/order/success` | Order confirmation |
+| `/order/track` | Track order — status timeline, courier, tracking number |
+| `/dashboard` … `/dashboard/profile` | Affiliate dashboard (post-activation app, dummy data): Overview, My Links, Earnings, Payouts, Referrals, Leaderboard, Resources, Profile/KYC |
+| `/join` | Affiliate onboarding wizard — signup → verify → role → KYC → tutorial → assessment → pass/fail/review/rejected (preview any step with `?step=`) |
 
 ## Fonts
 
@@ -41,7 +45,10 @@ placeholder.
 ```
 public/images/
 ├── home/
-│   ├── hero-1.jpg … hero-3.jpg       # homepage hero slideshow (1600×1100, crossfades)
+│   ├── hero-affiliate.jpg            # hero carousel — affiliate slide (1100×900)
+│   ├── hero-influencer.jpg           # hero carousel — influencer slide (1100×900)
+│   ├── hero-vendor.jpg               # hero carousel — vendor slide (1100×900)
+│   │   (the book slide reuses products/the-daniliya-method.jpg)
 │   ├── possibilities-1.jpg           # "One brand" tall image (900×1100)
 │   ├── possibilities-2.jpg           # "One brand" wide image (900×700)
 │   ├── service-laundry.jpg           # service cards (1000×750 each)
@@ -69,7 +76,8 @@ public/images/
 │   ├── affiliate-step-1.jpg … 5.jpg      # 1000×700 (UI screenshots)
 │   ├── influencer-step-1.jpg … 5.jpg     # 1000×700 (UI screenshots)
 │   └── vendor-step-1.jpg … 4.jpg         # 1000×700 (UI screenshots)
-└── affiliates/hero.jpg               # 1400×800
+├── affiliates/hero.jpg               # 1400×800
+└── affiliates/onboarding.jpg         # 900×1100 (sign-up / tutorial visual)
 ```
 
 Exact dimensions don't need to match — images are `object-cover` cropped —
@@ -110,9 +118,22 @@ name) and it updates everywhere. Two kinds:
 | `sort.svg` | shop price-sort button |
 | `clock.svg` | "Coming Soon" pill (services page) |
 | `send.svg` | Send Message buttons on /contact and /quote |
+| `arrow-left.svg` | "Go Back" (product detail), "Order Summary" / "Delivery Details" back links |
+| `minus.svg` | quantity steppers (product detail, checkout cart) |
+| `truck.svg` | product delivery line, "Track this Order", track-order status pill, "Estimated delivery" |
+| `wallet.svg` | "Paystack secure checkout" line, "Proceed to Payment" |
+| `pin.svg` | "Store Location" (checkout pickup), "Ship to" (order/track) |
+| `receipt.svg` | "Receipt" info cards (order success/track) |
+| `package.svg` | "Items in this order" headings |
+| `copy.svg` | Copy buttons (order reference, tracking number) |
+| `chevron-right.svg` | reserved — address row affordance |
 | `user.svg` | "Affiliate programme" tag in home CTA band |
 | `feature-fast.svg` `feature-team.svg` `feature-natural.svg` `feature-pricing.svg` | Why-Choose-Us checkerboard cards on all 4 service pages |
 | `step-book.svg` `step-clean.svg` `step-fresh.svg` | Our-Process step cards on all 4 service pages |
 | `affiliate-payouts.svg` `affiliate-secure.svg` `affiliate-dashboard.svg` `affiliate-training.svg` `affiliate-links.svg` `affiliate-nocap.svg` | "Why join Daniliya" cards on /affiliates |
 | **Full-colour:** `stepper-register.svg` `stepper-kyc.svg` `stepper-train.svg` `stepper-links.svg` `stepper-paid.svg` | 5-step earnings stepper on /affiliates |
 | **Full-colour:** `contact-whatsapp.svg` `contact-email.svg` `contact-location.svg` `contact-time.svg` | info cards on /contact and /quote |
+
+## Tutorial videos
+
+The 5 affiliate tutorial lessons embed YouTube. Add the client's video IDs in `src/lib/data.ts` → `tutorialLessons[n].videoId` (the bit after `watch?v=`). Until then each lesson shows a poster with a play button; once an ID is set, clicking play loads the embed.

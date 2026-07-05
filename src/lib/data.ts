@@ -648,6 +648,284 @@ export const howItWorksTabs: HowTab[] = [
   },
 ];
 
+/** Demo order shared by the order-success and track-order screens.
+ * Replaced by real order data once the commerce API is wired up. */
+export const demoOrder = {
+  reference: "DNL-1Z5X5B",
+  customerFirstName: "Dave",
+  receiptName: "Dex",
+  receiptPhone: "+234 838 38383",
+  shipName: "A252 Galadimawa",
+  shipArea: "FCT Abuja",
+  estimatedDelivery: "Sunday, 14 June",
+  courier: "GIG Logistics",
+  trackingNumber: "GIGHH3G1ME6",
+  items: [{ product: products[1], qty: 1 }],
+  deliveryFee: 8500,
+  tax: 2500,
+  /** Fulfilment timeline — `done` drives the green/grey state */
+  timeline: [
+    { title: "Order placed", text: "Payment confirmed via Paystack", at: "11 Jun 2026, 01:15", done: true },
+    { title: "Packed at hub", text: "Items packed at Daniliya hub, Lagos", at: "11 Jun 2026, 09:40", done: true },
+    { title: "Out for delivery", text: "With GIG Logistics, heading to you.", at: "—", done: false },
+    { title: "Delivered", text: "Order has reached its destination.", at: "—", done: false },
+  ],
+  /** Current headline status shown as a pill */
+  status: "Packed at the Hub",
+};
+
+/* ── Affiliate onboarding flow ─────────────────────────────────────────
+   Spec confirmed by client: flat ₦10,000 per book sale, 60% pass mark,
+   10 retakes, links on daniliya.com. */
+
+export const COMMISSION_PER_BOOK = 10000;
+export const ASSESSMENT_PASS_MARK = 60; // percent
+export const ASSESSMENT_RETAKES = 10;
+
+export const onboardingRoles = [
+  {
+    key: "customer",
+    icon: "cart",
+    title: "Customer",
+    text: "Shop the marketplace & book services.",
+    dark: true,
+  },
+  {
+    key: "affiliate",
+    icon: "affiliate-links",
+    title: "Affiliate",
+    text: "Earn weekly by sharing links",
+    dark: false,
+  },
+  {
+    key: "influencer",
+    icon: "affiliate-dashboard",
+    title: "Influencer",
+    text: "Run campaigns on your socials",
+    dark: false,
+  },
+  {
+    key: "vendor",
+    icon: "package",
+    title: "Vendors",
+    text: "Sell your products on Daniliya",
+    dark: true,
+  },
+];
+
+/** Nigerian banks for the KYC payout-account selector. */
+export const nigerianBanks = [
+  "Access Bank",
+  "Citibank Nigeria",
+  "Ecobank Nigeria",
+  "Fidelity Bank",
+  "First Bank of Nigeria",
+  "First City Monument Bank (FCMB)",
+  "Globus Bank",
+  "Guaranty Trust Bank (GTBank)",
+  "Heritage Bank",
+  "Keystone Bank",
+  "Kuda Microfinance Bank",
+  "Moniepoint MFB",
+  "Opay",
+  "Palmpay",
+  "Polaris Bank",
+  "Providus Bank",
+  "Stanbic IBTC Bank",
+  "Standard Chartered Bank",
+  "Sterling Bank",
+  "Union Bank of Nigeria",
+  "United Bank for Africa (UBA)",
+  "Unity Bank",
+  "Wema Bank",
+  "Zenith Bank",
+];
+
+/** KYC banner highlights — corrected to the flat-commission spec. */
+export const kycHighlights = [
+  { icon: "truck", title: "Weekly payouts", text: "Every Monday, straight to your bank." },
+  { icon: "affiliate-payouts", title: "₦10,000 per sale", text: "Flat commission on every book sold." },
+  { icon: "shield-check", title: "Verified & secure", text: "Light KYC keeps the network trusted." },
+];
+
+export type TutorialLesson = {
+  title: string;
+  text: string;
+  /** YouTube video id — drop the client's id in to enable playback */
+  videoId: string;
+  /** lesson-specific right-rail panel (heading + bullets) */
+  aside: { heading: Accent; bullets: string[] };
+};
+
+export const tutorialLessons: TutorialLesson[] = [
+  {
+    title: "Welcome to Daniliya Affiliates",
+    text: "How the programme works in under 60 seconds. Train, get verified, share your links, and earn every Monday.",
+    videoId: "",
+    aside: {
+      heading: { pre: "Welcome to Daniliya ", gold: "Affiliates" },
+      bullets: [
+        "How the programme works in under 60 seconds.",
+        "Watch every lesson to unlock the assessment.",
+        "Weekly Monday payouts make the difference.",
+      ],
+    },
+  },
+  {
+    title: "Your payment links explained",
+    text: "You get a unique payment link for every product — not just a referral code. Every sale through your link is attributed to you.",
+    videoId: "",
+    aside: {
+      heading: { pre: "Your payment links ", gold: "explained" },
+      bullets: [
+        "Every product gives you a unique referral link.",
+        "Anyone who buys via your link earns you commission.",
+        "Track clicks and conversions in your dashboard.",
+      ],
+    },
+  },
+  {
+    title: "How your commission works",
+    text: "You earn a flat ₦10,000 on every book sale you drive. No tiers, no caps — ten sales, ten commissions.",
+    videoId: "",
+    aside: {
+      heading: { pre: "How your commission ", gold: "works" },
+      bullets: [
+        "You earn a flat ₦10,000 on every book sale.",
+        "Commission moves Pending → Confirmed → Disbursed.",
+        "Refunded orders reverse the commission entry.",
+      ],
+    },
+  },
+  {
+    title: "Sharing the right way",
+    text: "Acceptable vs. unacceptable sharing practices. Promote honestly on WhatsApp, Instagram and your status — no spam.",
+    videoId: "",
+    aside: {
+      heading: { pre: "Sharing the right ", gold: "way" },
+      bullets: [
+        "Promote honestly — no spam or fake claims.",
+        "Your WhatsApp status & socials are your best channels.",
+        "Misuse can pause your payouts, so play fair.",
+      ],
+    },
+  },
+  {
+    title: "Getting paid every Monday",
+    text: "The commission lifecycle: Pending → Confirmed → Disbursed. Confirmed earnings are paid out every Monday.",
+    videoId: "",
+    aside: {
+      heading: { pre: "Getting paid every ", gold: "Monday" },
+      bullets: [
+        "Confirmed earnings are paid out every Monday.",
+        "Payouts go straight to your verified bank account.",
+        "Watch the countdown to payout on your dashboard.",
+      ],
+    },
+  },
+];
+
+export type AssessmentQuestion = {
+  q: string;
+  options: string[];
+  /** index of the correct option */
+  answer: number;
+};
+
+export const assessmentQuestions: AssessmentQuestion[] = [
+  {
+    q: "How often does Daniliya pay out affiliate commissions?",
+    options: ["Daily", "Every Friday", "Every Monday", "End of the Month"],
+    answer: 2,
+  },
+  {
+    q: "How much do you earn on each book sale you drive?",
+    options: ["5% of the price", "₦10,000 flat", "₦5,000 flat", "It varies by tier"],
+    answer: 1,
+  },
+  {
+    q: "What do you share with customers to get credited for a sale?",
+    options: [
+      "Just your name",
+      "A screenshot of the product",
+      "Your unique per-product payment link",
+      "The Daniliya office address",
+    ],
+    answer: 2,
+  },
+  {
+    q: "What must you complete before your account is activated?",
+    options: [
+      "Nothing, it's instant",
+      "KYC, the tutorial and this assessment",
+      "A paid subscription",
+      "Ten sales",
+    ],
+    answer: 1,
+  },
+  {
+    q: "Which documents are required for KYC?",
+    options: [
+      "Passport photo only",
+      "NIN, BVN, bank details and a government-issued ID",
+      "Just your email",
+      "A utility bill",
+    ],
+    answer: 1,
+  },
+  {
+    q: "What is the order of the commission lifecycle?",
+    options: [
+      "Disbursed → Confirmed → Pending",
+      "Pending → Confirmed → Disbursed",
+      "Confirmed → Pending → Disbursed",
+      "Pending → Disbursed → Confirmed",
+    ],
+    answer: 1,
+  },
+  {
+    q: "What happens to your commission if a customer gets a refund?",
+    options: [
+      "Nothing, you keep it",
+      "The related commission is reversed",
+      "You pay a penalty",
+      "Your account is closed",
+    ],
+    answer: 1,
+  },
+  {
+    q: "Is there a cap on how much you can earn?",
+    options: [
+      "Yes, ₦100,000 per month",
+      "Yes, after 10 sales",
+      "No, commission scales with your sales",
+      "Only on weekends",
+    ],
+    answer: 2,
+  },
+  {
+    q: "Which is an acceptable way to share your link?",
+    options: [
+      "Spamming strangers' DMs",
+      "Posting on your WhatsApp status and socials",
+      "Impersonating Daniliya staff",
+      "Promising fake discounts",
+    ],
+    answer: 1,
+  },
+  {
+    q: "What pass mark do you need to activate your affiliate account?",
+    options: ["40%", "50%", "60%", "80%"],
+    answer: 2,
+  },
+];
+
+export const assessmentImproveTopics = [
+  "Commission lifecycle (Pending → Confirmed → Disbursed).",
+  "Acceptable vs. unacceptable sharing practices.",
+  "Payout schedule & how refunds affect commissions.",
+];
+
 export const contactInfo = {
   whatsapp: "+234 800 DANILIYA",
   email: "hello@daniliya.com",

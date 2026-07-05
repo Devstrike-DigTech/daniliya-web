@@ -1,68 +1,74 @@
 import type { Metadata } from "next";
 import Image from "next/image";
-import Ambient from "@/components/Ambient";
-import GalleryCarousel from "@/components/GalleryCarousel";
+import Icon from "@/components/Icon";
 import HowTabs from "./HowTabs";
 
 export const metadata: Metadata = {
   title: "How it Works",
   description:
-    "Whether you're booking a service, buying a product, or earning as an affiliate — every process is designed to be clear and effortless.",
+    "Whether you're earning as an affiliate, influencer or vendor — every process is designed to be clear and effortless.",
 };
 
-const heroImages = [1, 2, 3].map((n) => `/images/how-it-works/hero-${n}.jpg`);
+const STRIPE =
+  "repeating-linear-gradient(45deg, var(--color-brand) 0 9px, var(--color-ink) 9px 18px)";
 
 export default function HowItWorksPage() {
   return (
     <>
-      <Ambient theme="steps" />
-
       {/* Hero */}
-      <section className="relative bg-ink text-white">
-        <div className="pinstripes absolute inset-0" aria-hidden />
-        <div className="relative mx-auto max-w-[1376px] px-4 sm:px-8">
-          <div className="grid items-center gap-10 pt-14 lg:grid-cols-[1.1fr_0.9fr] lg:gap-16 lg:pt-20">
-            <h1 className="fade-up text-[40px] font-bold leading-[1.05] tracking-tight sm:text-[56px] lg:text-[64px]">
-              SIMPLE,
+      <section className="relative overflow-hidden bg-[#0c0c0c] text-white">
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-0 opacity-[0.05]"
+          style={{
+            backgroundImage:
+              "linear-gradient(#fff 1px,transparent 1px),linear-gradient(90deg,#fff 1px,transparent 1px)",
+            backgroundSize: "52px 52px",
+          }}
+        />
+        <div className="relative mx-auto grid max-w-[1376px] items-center gap-10 px-4 py-14 sm:px-8 lg:grid-cols-2 lg:py-20">
+          {/* Left */}
+          <div className="text-center lg:text-left">
+            <h1 className="text-[clamp(44px,7vw,80px)] font-extrabold uppercase leading-[0.95] tracking-tight">
+              HOW TO EARN
               <br />
-              <span className="text-brand">TRANSPARENT.</span>
+              100K <span className="text-brand">WEEKLY</span>
             </h1>
-            <p className="fade-up fade-up-1 max-w-md text-[15px] leading-relaxed text-white/85">
-              Whether you&apos;re booking a service, buying a product, or
-              earning as an affiliate — every process is designed to be clear
-              and effortless.
+            <p className="mx-auto mt-6 max-w-md text-[15.5px] leading-relaxed text-white/70 lg:mx-0">
+              Whether you&apos;re earning as an affiliate, influencer or vendor,
+              every process is designed to be clear and effortless.
             </p>
+          </div>
+
+          {/* Right visual */}
+          <div className="relative mx-auto h-[360px] w-full max-w-[500px] sm:h-[460px]">
+            <div aria-hidden className="absolute inset-x-6 bottom-0 top-16 rounded-3xl bg-white/[0.04]" />
+            <div
+              aria-hidden
+              className="absolute bottom-4 right-4 z-0 h-24 w-24 overflow-hidden rounded-full opacity-90"
+              style={{ background: STRIPE }}
+            />
+            <div className="absolute inset-0 z-10">
+              <Image
+                src="/images/home/hero-influencer.png"
+                alt="A Daniliya earner"
+                fill
+                priority
+                sizes="(max-width:1024px) 85vw, 500px"
+                quality={90}
+                className="object-contain object-bottom"
+              />
+            </div>
+            <span className="absolute left-0 top-20 z-20 inline-flex items-center gap-2 rounded-2xl bg-white/95 px-3.5 py-2 text-[13px] font-bold text-ink shadow-lg">
+              <Icon name="check" size={15} className="text-brand" /> Easy to use
+            </span>
+            <span className="absolute right-0 top-28 z-20 inline-flex items-center gap-2 rounded-2xl bg-coal px-3.5 py-2 text-[13px] font-bold text-white shadow-lg">
+              <Icon name="wallet" size={15} className="text-brand" /> Earn{" "}
+              <span className="text-brand">Weekly</span>
+            </span>
           </div>
         </div>
       </section>
-
-      {/* Hero photos — break out of the dark band */}
-      <div className="bg-[linear-gradient(to_bottom,var(--color-ink)_0,var(--color-ink)_150px,transparent_150px)] pt-12">
-        <div className="fade-up fade-up-2 mx-auto max-w-[1376px] px-4 sm:px-8">
-          <GalleryCarousel
-            className="sm:hidden"
-            images={heroImages}
-            altBase="How Daniliya works"
-          />
-          <div className="hidden grid-cols-3 gap-6 sm:grid">
-            {heroImages.map((src, n) => (
-              <div
-                key={src}
-                className="relative aspect-[4/3.2] overflow-hidden rounded-2xl"
-              >
-                <Image
-                  src={src}
-                  alt={`How Daniliya works ${n + 1}`}
-                  fill
-                  priority={n === 0}
-                  sizes="33vw"
-                  className="object-cover"
-                />
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
 
       {/* Audience tabs */}
       <section className="bg-paper py-14">

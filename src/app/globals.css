@@ -41,6 +41,10 @@
   --color-navy: #1b3a6b;
   --color-teal: #0e7490;
   --color-gold: #d4a017;
+  /* Green — second accent introduced in the 2026 redesign (earnings, "Paid
+     Monday", success). Accent + a deep forest surface for the earnings cards. */
+  --color-green: #1fa850;
+  --color-green-deep: #10402a;
   --font-sans: "Product Sans", var(--font-fallback), Arial, Helvetica,
     sans-serif;
 }

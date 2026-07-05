@@ -24,8 +24,8 @@ const columns = [
     links: [
       { label: "How it Works", href: "/how-it-works" },
       { label: "Contact Us", href: "/contact" },
-      { label: "Privacy Policy", href: "#" },
-      { label: "Terms of Use", href: "#" },
+      { label: "Privacy Policy", href: "/privacy" },
+      { label: "Terms of Use", href: "/terms" },
     ],
   },
 ];

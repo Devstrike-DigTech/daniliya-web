@@ -1,10 +1,17 @@
 import Image from "next/image";
 import Link from "next/link";
-import Icon from "@/components/Icon";
+import AddToCartButton from "@/components/AddToCartButton";
 import type { Product } from "@/lib/data";
 import { naira } from "@/lib/format";
 
-export default function ProductCard({ product }: { product: Product }) {
+export default function ProductCard({
+  product,
+  tone = "light",
+}: {
+  product: Product;
+  tone?: "light" | "dark";
+}) {
+  const dark = tone === "dark";
   return (
     <div className="group">
       <Link
@@ -25,30 +32,39 @@ export default function ProductCard({ product }: { product: Product }) {
         )}
       </Link>
       <div className="mt-4">
-        <span className="inline-block rounded-full bg-brand/15 px-3.5 py-1.5 text-xs font-bold text-brand">
+        <span
+          className={`inline-block rounded-full px-3.5 py-1.5 text-xs font-bold ${
+            dark
+              ? "border border-white/20 bg-white/[0.06] text-white/85"
+              : "bg-brand/15 text-brand"
+          }`}
+        >
           {product.chip}
         </span>
         <Link href={`/shop/${product.slug}`} className="mt-2.5 block">
-          <p className="text-[17px] font-bold leading-snug">{product.title}</p>
+          <p className={`text-[17px] font-bold leading-snug ${dark ? "text-white" : ""}`}>
+            {product.title}
+          </p>
         </Link>
-        <p className="mt-1 line-clamp-2 text-[13px] leading-relaxed text-ink/60">
+        <p
+          className={`mt-1 line-clamp-2 text-[13px] leading-relaxed ${
+            dark ? "text-white/55" : "text-ink/60"
+          }`}
+        >
           {product.blurb}
         </p>
         <div className="mt-3 flex items-center justify-between gap-3">
           <p className="flex items-baseline gap-2">
             {product.oldPrice && (
-              <span className="text-sm text-ink/40 line-through">
+              <span className={`text-sm line-through ${dark ? "text-white/40" : "text-ink/40"}`}>
                 {naira(product.oldPrice)}
               </span>
             )}
-            <span className="text-[17px] font-bold">{naira(product.price)}</span>
+            <span className={`text-[17px] font-bold ${dark ? "text-white" : ""}`}>
+              {naira(product.price)}
+            </span>
           </p>
-          <Link
-            href="/checkout"
-            className="inline-flex items-center gap-1.5 rounded-lg bg-brand px-4 py-2.5 text-[13px] font-bold text-white transition-opacity hover:opacity-90"
-          >
-            <Icon name="plus" size={14} /> Add to Cart
-          </Link>
+          <AddToCartButton slug={product.slug} />
         </div>
       </div>
     </div>

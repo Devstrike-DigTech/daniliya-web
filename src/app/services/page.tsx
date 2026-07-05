@@ -1,27 +1,22 @@
 import type { Metadata } from "next";
-import Link from "next/link";
-import SectionTag from "@/components/SectionTag";
-import Ambient from "@/components/Ambient";
-import Reveal from "@/components/Reveal";
+import Image from "next/image";
 import Icon from "@/components/Icon";
-import CrossfadeImage from "@/components/CrossfadeImage";
-import { verticals } from "@/lib/data";
+import Reveal from "@/components/Reveal";
+import ServiceQuoteForm from "@/components/ServiceQuoteForm";
 
 export const metadata: Metadata = {
   title: "Our Services",
   description:
-    "Laundry, dry cleaning, interior decoration and construction — one standard of excellence.",
+    "Industrial cleaning and fumigation under your brand — get a tailored quote within 24 hours.",
 };
 
 export default function ServicesPage() {
   return (
     <>
-      <Ambient theme="home" />
-
       {/* Hero */}
-      <section className="relative bg-ink text-white">
+      <section className="relative bg-ink text-center text-white">
         <div className="pinstripes absolute inset-0" aria-hidden />
-        <div className="relative mx-auto max-w-[1376px] px-4 pt-14 sm:px-8 lg:pt-20">
+        <div className="relative mx-auto max-w-[1376px] px-4 py-16 sm:px-8 lg:py-24">
           <p className="fade-up text-[13px] font-bold uppercase tracking-[0.35em] text-brand">
             What we offer
           </p>
@@ -31,115 +26,63 @@ export default function ServicesPage() {
         </div>
       </section>
 
-      {/* Hero image — breaks out of the dark band */}
-      <div className="bg-[linear-gradient(to_bottom,var(--color-ink)_0,var(--color-ink)_150px,transparent_150px)] pt-10">
-        <div className="fade-up fade-up-2 mx-auto max-w-[1376px] px-4 sm:px-8">
-          <div className="relative aspect-[1360/520] min-h-[220px] w-full overflow-hidden rounded-2xl">
-            {/* crossfades through every service */}
-            <CrossfadeImage
-              priority
-              images={[
-                "/images/services/hero.jpg",
-                ...verticals.map((v) => `/images/verticals/${v.slug}/hero.jpg`),
-              ]}
-              alt="Daniliya services"
-              sizes="100vw"
-              intervalMs={5000}
-            />
+      {/* Quote section */}
+      <section className="bg-paper">
+        <div className="mx-auto grid max-w-[1376px] items-start gap-12 px-4 py-16 sm:px-8 lg:grid-cols-2 lg:gap-16 lg:py-24">
+          <Reveal>
+            <div className="relative min-h-[420px] overflow-hidden rounded-2xl border-l-4 border-brand lg:sticky lg:top-24 lg:min-h-[640px]">
+              <Image
+                src="/images/verticals/laundry/hero.jpg"
+                alt="Daniliya industrial cleaning"
+                fill
+                priority
+                sizes="(max-width:1024px) 100vw, 50vw"
+                className="object-cover"
+              />
+            </div>
+          </Reveal>
+          <Reveal delay={120}>
+            <ServiceQuoteForm />
+          </Reveal>
+        </div>
+      </section>
+
+      {/* Laundry — coming soon */}
+      <section className="bg-cream">
+        <div className="mx-auto max-w-[1376px] px-4 py-16 sm:px-8">
+          <div className="relative overflow-hidden rounded-3xl bg-ink text-white">
+            <div className="pinstripes absolute inset-0 opacity-40" aria-hidden />
+            <div className="relative grid items-center gap-8 p-8 sm:p-12 lg:grid-cols-2">
+              <div>
+                <span className="inline-flex items-center gap-2 rounded-full bg-brand/15 px-4 py-1.5 text-xs font-bold text-brand">
+                  <Icon name="clock" size={13} /> Coming soon
+                </span>
+                <h2 className="mt-5 text-[32px] font-bold leading-tight sm:text-[42px]">
+                  Laundry done{" "}
+                  <span className="italic text-brand">right.</span>
+                </h2>
+                <p className="mt-4 max-w-md text-[15px] leading-relaxed text-white/75">
+                  Premium pickup-and-delivery laundry and dry cleaning is on the
+                  way. Join the waitlist and we&apos;ll let you know the moment
+                  it launches in your area.
+                </p>
+                <span className="mt-7 inline-flex cursor-default items-center gap-2 rounded-xl bg-white/10 px-7 py-3.5 text-[15px] font-bold text-white/80">
+                  <Icon name="clock" size={16} /> Coming Soon
+                </span>
+              </div>
+              <div className="relative hidden min-h-[240px] overflow-hidden rounded-2xl lg:block">
+                <Image
+                  src="/images/verticals/dry-cleaning/hero.jpg"
+                  alt="Daniliya laundry"
+                  fill
+                  sizes="50vw"
+                  className="object-cover"
+                />
+              </div>
+            </div>
           </div>
         </div>
-      </div>
-
-      {/* Service sections — alternating layout, design's collage pattern */}
-      {verticals.map((v, i) => {
-        const mirrored = i % 2 === 1;
-        return (
-          <section key={v.slug} className={mirrored ? "bg-cream" : "bg-paper"}>
-            <div className="mx-auto grid max-w-[1376px] items-center gap-14 px-4 py-24 sm:px-8 lg:grid-cols-2">
-              {/* Text column */}
-              <Reveal className={mirrored ? "lg:order-2" : ""}>
-                <SectionTag>{`Service 0${i + 1}`}</SectionTag>
-                <h2 className="mt-5 text-[34px] font-bold leading-tight sm:text-[44px]">
-                  {v.index.line1}
-                  <br />
-                  {v.index.line2.pre}
-                  <span className="italic text-brand">{v.index.line2.gold}</span>
-                  {v.index.line2.post}
-                </h2>
-                <p className="mt-6 max-w-md text-[15px] leading-relaxed text-ink/75">
-                  {v.index.text}
-                </p>
-                <ul className="mt-6 space-y-3.5">
-                  {v.index.bullets.map((b) => (
-                    <li
-                      key={b}
-                      className="flex items-center gap-3 text-[15px] font-bold"
-                    >
-                      <span
-                        aria-hidden
-                        className="h-2.5 w-2.5 shrink-0 rounded-full bg-brand"
-                      />
-                      {b}
-                    </li>
-                  ))}
-                </ul>
-                <div className="mt-8">
-                  {v.index.comingSoon ? (
-                    <span className="inline-flex cursor-default items-center gap-2 rounded-lg bg-brand px-7 py-3.5 text-[15px] font-bold text-white">
-                      <Icon name="clock" size={16} />
-                      Coming Soon
-                    </span>
-                  ) : (
-                    <Link
-                      href={`/services/${v.slug}`}
-                      className="inline-flex items-center gap-2 rounded-lg bg-brand px-7 py-3.5 text-[15px] font-bold text-white transition-opacity hover:opacity-90"
-                    >
-                      Learn More <Icon name="arrow-right" size={15} />
-                    </Link>
-                  )}
-                </div>
-              </Reveal>
-
-              {/* Collage column: one tall image + two stacked */}
-              <Reveal
-                delay={150}
-                className={mirrored ? "lg:order-1" : ""}
-              >
-                {/* each tile cycles the gallery on a staggered timer */}
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="relative row-span-2 min-h-[340px] overflow-hidden rounded-2xl sm:min-h-[420px]">
-                    <CrossfadeImage
-                      images={[1, 2, 3].map(
-                        (n) => `/images/verticals/${v.slug}/gallery-${n}.jpg`,
-                      )}
-                      alt={`${v.name} 1`}
-                      sizes="(max-width: 1024px) 50vw, 25vw"
-                      intervalMs={7000}
-                      startDelayMs={i * 800}
-                    />
-                  </div>
-                  {[2, 3].map((n) => (
-                    <div
-                      key={n}
-                      className="relative aspect-[5/4] overflow-hidden rounded-2xl"
-                    >
-                      <CrossfadeImage
-                        images={[n, (n % 3) + 1, ((n + 1) % 3) + 1].map(
-                          (m) => `/images/verticals/${v.slug}/gallery-${m}.jpg`,
-                        )}
-                        alt={`${v.name} ${n}`}
-                        sizes="(max-width: 1024px) 50vw, 25vw"
-                        intervalMs={7000}
-                        startDelayMs={i * 800 + n * 1700}
-                      />
-                    </div>
-                  ))}
-                </div>
-              </Reveal>
-            </div>
-          </section>
-        );
-      })}
+      </section>
     </>
   );
 }

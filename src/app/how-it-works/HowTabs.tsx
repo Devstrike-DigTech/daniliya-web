@@ -92,15 +92,18 @@ function TimelineRow({ step, i }: { step: HowStep; i: number }) {
 
 /** Four-audience tab switcher: grid layout for Customers/Vendors,
  * center-line timeline for Affiliates/Influencers. */
+// The redesign leads with earners: Affiliates · Influencers · Vendors.
+const tabs = howItWorksTabs.filter((t) => t.key !== "customers");
+
 export default function HowTabs() {
   const [active, setActive] = useState(0);
-  const tab = howItWorksTabs[active];
+  const tab = tabs[active];
 
   return (
     <div className="mx-auto max-w-[1376px] px-4 sm:px-8">
       {/* Tab bar */}
       <div className="flex gap-2 overflow-x-auto border-b border-ink/10 sm:gap-8">
-        {howItWorksTabs.map((t, i) => (
+        {tabs.map((t, i) => (
           <button
             key={t.key}
             onClick={() => setActive(i)}
