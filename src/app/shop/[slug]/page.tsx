@@ -1,23 +1,25 @@
 import type { Metadata } from "next";
 import Ambient from "@/components/Ambient";
 import Icon from "@/components/Icon";
-import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import ProductCard from "@/components/ProductCard";
 import ProductBuyBox from "@/components/ProductBuyBox";
-import { products } from "@/lib/data";
+import ProductImage from "@/components/ProductImage";
+import { apiFetchSafe, type Paginated, type ProductCardDto, type ProductDetailDto } from "@/lib/api";
 import { naira } from "@/lib/format";
 
 type Props = { params: Promise<{ slug: string }> };
 
-export function generateStaticParams() {
-  return products.map((p) => ({ slug: p.slug }));
-}
+/**
+ * No `generateStaticParams` on purpose: slugs live in the API, not in the
+ * bundle. Prerendering a build-time list would bake in products that may since
+ * have been delisted (and 404 for ones added after the build).
+ */
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
-  const product = products.find((p) => p.slug === slug);
+  const product = await apiFetchSafe<ProductDetailDto>(`/products/${encodeURIComponent(slug)}`);
   return { title: product ? product.title : "Product" };
 }
 
@@ -29,10 +31,18 @@ const trust = [
 
 export default async function ProductPage({ params }: Props) {
   const { slug } = await params;
-  const product = products.find((p) => p.slug === slug);
+  // The API 404s anything that is not an ACTIVE product.
+  const product = await apiFetchSafe<ProductDetailDto>(`/products/${encodeURIComponent(slug)}`);
   if (!product) notFound();
 
-  const similar = products.filter((p) => p.slug !== product.slug).slice(0, 3);
+  // "Similar" = same category. There is no recommendations endpoint, so this is
+  // an honest category query rather than a curated list.
+  const related = product.category
+    ? await apiFetchSafe<Paginated<ProductCardDto>>(
+        `/products?category=${encodeURIComponent(product.category)}&limit=4`,
+      )
+    : null;
+  const similar = (related?.data ?? []).filter((p) => p.slug !== product.slug).slice(0, 3);
 
   return (
     <>
@@ -50,13 +60,12 @@ export default async function ProductPage({ params }: Props) {
         </div>
         <div className="mx-auto grid max-w-[1376px] items-center gap-12 px-4 pb-20 pt-8 sm:px-8 lg:grid-cols-2">
           <div className="fade-up relative aspect-[5/4] w-full overflow-hidden rounded-2xl">
-            <Image
-              src={product.image}
+            {/* `images` is empty for every product today — see ProductImage. */}
+            <ProductImage
+              src={product.images[0] ?? null}
               alt={product.title}
-              fill
-              priority
               sizes="(max-width: 1024px) 100vw, 50vw"
-              className="object-cover"
+              priority
             />
             <div
               aria-hidden
@@ -67,14 +76,43 @@ export default async function ProductPage({ params }: Props) {
             <h1 className="text-[36px] font-bold leading-tight sm:text-[44px]">
               {product.title}
             </h1>
-            <p className="mt-3 text-[32px] font-bold text-brand">
-              {naira(product.price)}
+            <p className="mt-2 text-[14px] text-white/60">
+              Sold by <span className="font-bold text-white/85">{product.vendor}</span>
+              {product.category && <> · {product.category}</>}
             </p>
-            <p className="mt-5 max-w-lg text-[15px] leading-relaxed text-white/70">
-              {product.description}
+            <p className="mt-3 text-[32px] font-bold text-brand">
+              {naira(Number(product.price))}
+            </p>
+            {/* Rendered only when the API actually has copy for this product. */}
+            {product.description && (
+              <p className="mt-5 max-w-lg text-[15px] leading-relaxed text-white/70">
+                {product.description}
+              </p>
+            )}
+
+            <p className="mt-4 text-[14px] font-bold">
+              {product.inStock ? (
+                <span className="text-brand">
+                  In stock
+                  {product.stockQuantity > 0 && (
+                    <span className="font-normal text-white/60">
+                      {" "}
+                      · {product.stockQuantity} available
+                    </span>
+                  )}
+                </span>
+              ) : (
+                <span className="text-white/60">Out of stock</span>
+              )}
             </p>
 
-            <ProductBuyBox slug={product.slug} price={product.price} />
+            <ProductBuyBox
+              productId={product.id}
+              slug={product.slug}
+              price={Number(product.price)}
+              inStock={product.inStock}
+              stockQuantity={product.stockQuantity}
+            />
 
             <div className="mt-8 space-y-3 rounded-2xl bg-white/5 p-6 ring-1 ring-white/10">
               {trust.map((t) => (
@@ -91,19 +129,21 @@ export default async function ProductPage({ params }: Props) {
         </div>
       </section>
 
-      {/* Similar products */}
-      <section className="bg-[#121212] text-white">
-        <div className="mx-auto max-w-[1376px] px-4 py-20 sm:px-8">
-          <h2 className="text-center text-[28px] font-bold sm:text-[34px]">
-            Similar Products
-          </h2>
-          <div className="mt-10 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
-            {similar.map((p) => (
-              <ProductCard key={p.slug} product={p} tone="dark" />
-            ))}
+      {/* Similar products — omitted entirely when the category has no siblings. */}
+      {similar.length > 0 && (
+        <section className="bg-[#121212] text-white">
+          <div className="mx-auto max-w-[1376px] px-4 py-20 sm:px-8">
+            <h2 className="text-center text-[28px] font-bold sm:text-[34px]">
+              Similar Products
+            </h2>
+            <div className="mt-10 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+              {similar.map((p) => (
+                <ProductCard key={p.id} product={p} tone="dark" />
+              ))}
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
     </>
   );
 }

@@ -2,8 +2,9 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import Icon from "@/components/Icon";
+import ProductImage from "@/components/ProductImage";
 import ShopCatalogue from "@/components/ShopCatalogue";
-import { products } from "@/lib/data";
+import { apiFetchSafe, type Paginated, type ProductCardDto, type ProductDetailDto } from "@/lib/api";
 
 export const metadata: Metadata = {
   title: "Book & Shop",
@@ -15,8 +16,33 @@ const STRIPE =
   "repeating-linear-gradient(45deg, var(--color-brand) 0 9px, var(--color-ink) 9px 18px)";
 const avatars = ["avatar-1", "avatar-2", "avatar-3"];
 
-export default function ShopPage() {
-  const book = products.find((p) => p.slug === "the-daniliya-method") ?? products[0];
+/** The book the hero is built around. Its copy comes from GET /products/:slug. */
+const HERO_SLUG = "the-builders-handbook";
+
+const PAGE_SIZE = 24; // GET /products caps `limit` at 60.
+
+type Props = {
+  searchParams: Promise<{ q?: string; category?: string; page?: string }>;
+};
+
+export default async function ShopPage({ searchParams }: Props) {
+  const sp = await searchParams;
+  const q = sp.q?.trim() ?? "";
+  const category = sp.category?.trim() ?? "";
+  const page = Math.max(1, Number(sp.page) || 1);
+
+  const query = new URLSearchParams({ page: String(page), limit: String(PAGE_SIZE) });
+  if (q) query.set("q", q);
+  if (category) query.set("category", category);
+
+  const [listing, categories, book] = await Promise.all([
+    apiFetchSafe<Paginated<ProductCardDto>>(`/products?${query}`),
+    apiFetchSafe<string[]>("/products/categories"),
+    apiFetchSafe<ProductDetailDto>(`/products/${HERO_SLUG}`),
+  ]);
+
+  const products = listing?.data ?? [];
+  const meta = listing?.meta;
 
   return (
     <div className="bg-[#0c0c0c]">
@@ -56,23 +82,29 @@ export default function ShopPage() {
               <br />
               <span className="text-brand">HANDBOOK</span>
             </h1>
-            <p className="mx-auto mt-6 max-w-md text-[15.5px] leading-relaxed text-white/70 lg:mx-0">
-              {book.blurb}
-            </p>
-            <div className="mt-8 flex flex-wrap justify-center gap-4 lg:justify-start">
-              <Link
-                href={`/shop/${book.slug}`}
-                className="inline-flex items-center gap-2 rounded-xl bg-brand px-8 py-4 text-[15px] font-bold text-ink transition-opacity hover:opacity-90"
-              >
-                <Icon name="wallet" size={16} /> Buy Now
-              </Link>
-              <Link
-                href={`/shop/${book.slug}`}
-                className="inline-flex items-center gap-2 rounded-xl border border-brand px-8 py-4 text-[15px] font-bold text-brand transition-colors hover:bg-brand/10"
-              >
-                <Icon name="package" size={16} /> Gift &amp; Package
-              </Link>
-            </div>
+            {/* The API returns `description: null` for this product today, so the
+                strapline simply does not render rather than showing filler. */}
+            {book?.description && (
+              <p className="mx-auto mt-6 max-w-md text-[15.5px] leading-relaxed text-white/70 lg:mx-0">
+                {book.description}
+              </p>
+            )}
+            {book && (
+              <div className="mt-8 flex flex-wrap justify-center gap-4 lg:justify-start">
+                <Link
+                  href={`/shop/${book.slug}`}
+                  className="inline-flex items-center gap-2 rounded-xl bg-brand px-8 py-4 text-[15px] font-bold text-ink transition-opacity hover:opacity-90"
+                >
+                  <Icon name="wallet" size={16} /> Buy Now
+                </Link>
+                <Link
+                  href={`/shop/${book.slug}`}
+                  className="inline-flex items-center gap-2 rounded-xl border border-brand px-8 py-4 text-[15px] font-bold text-brand transition-colors hover:bg-brand/10"
+                >
+                  <Icon name="package" size={16} /> Gift &amp; Package
+                </Link>
+              </div>
+            )}
           </div>
 
           {/* Book cover + badges */}
@@ -84,22 +116,18 @@ export default function ShopPage() {
               style={{ background: STRIPE }}
             />
             <Link
-              href={`/shop/${book.slug}`}
+              href={book ? `/shop/${book.slug}` : "/shop"}
               className="float-slow relative z-10 mx-auto block h-full w-[68%] overflow-hidden rounded-xl shadow-2xl"
             >
-              <Image
-                src={book.image}
-                alt={book.title}
-                fill
-                priority
+              <ProductImage
+                src={book?.images[0] ?? null}
+                alt={book?.title ?? "Builder's Handbook"}
                 sizes="320px"
-                quality={90}
-                className="object-cover"
+                priority
               />
             </Link>
-            <span className="absolute left-0 top-8 z-20 inline-flex items-center gap-2 rounded-2xl bg-white/95 px-3.5 py-2 text-[13px] font-bold text-ink shadow-lg">
-              <Icon name="crown" size={15} className="text-brand" /> Best Seller
-            </span>
+            {/* The old "Best Seller" badge was dropped: the API exposes no sales
+                rank or badge field, so it would have been a decorative claim. */}
             <span className="absolute right-0 top-24 z-20 inline-flex items-center gap-2 rounded-2xl bg-coal px-3.5 py-2 text-[13px] font-bold text-white shadow-lg">
               <Icon name="truck" size={15} className="text-brand" /> Nationwide{" "}
               <span className="text-brand">Delivery</span>
@@ -121,7 +149,16 @@ export default function ShopPage() {
           <p className="mt-2 text-[15px] text-white/65">
             Curated products from Daniliya and trusted Nigerian vendors.
           </p>
-          <ShopCatalogue products={products} tone="dark" />
+          <ShopCatalogue
+            products={products}
+            categories={categories ?? []}
+            q={q}
+            category={category}
+            page={meta?.page ?? 1}
+            pages={meta?.pages ?? 1}
+            total={meta?.total ?? 0}
+            tone="dark"
+          />
         </div>
       </section>
     </div>

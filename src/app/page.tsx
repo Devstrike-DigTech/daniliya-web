@@ -5,7 +5,7 @@ import Reveal from "@/components/Reveal";
 import HomeHero from "@/components/HomeHero";
 import ShopCatalogue from "@/components/ShopCatalogue";
 import TestimonialMarquee from "@/components/TestimonialMarquee";
-import { products } from "@/lib/data";
+import { apiFetchSafe, type Paginated, type ProductCardDto } from "@/lib/api";
 import { portals } from "@/lib/portals";
 
 type ValueCard = {
@@ -82,7 +82,16 @@ function ValueCardInner({ c }: { c: ValueCard }) {
   );
 }
 
-export default function HomePage() {
+/** How many products the home page teases before "See More Products". */
+const HOME_PRODUCT_COUNT = 6;
+
+export default async function HomePage() {
+  // Marketplace teaser only — every other section on this page is marketing
+  // copy and is intentionally left as-is.
+  const [listing, categories] = await Promise.all([
+    apiFetchSafe<Paginated<ProductCardDto>>(`/products?limit=${HOME_PRODUCT_COUNT}`),
+    apiFetchSafe<string[]>("/products/categories"),
+  ]);
   return (
     <div className="bg-[#0c0c0c]">
       {/* Hero — single static "Earn ₦100K every week" earner hero */}
@@ -176,7 +185,14 @@ export default function HomePage() {
               See More Products <Icon name="arrow-right" size={16} />
             </Link>
           </div>
-          <ShopCatalogue products={products} tone="dark" />
+          {/* Searching or picking a category here hands off to the full
+              catalogue at /shop, which owns the query params. */}
+          <ShopCatalogue
+            products={listing?.data ?? []}
+            categories={categories ?? []}
+            basePath="/shop"
+            tone="dark"
+          />
         </div>
       </section>
 

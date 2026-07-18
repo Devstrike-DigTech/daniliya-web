@@ -6,6 +6,13 @@ import Icon from "@/components/Icon";
 import { useCart } from "@/components/CartContext";
 import { naira } from "@/lib/format";
 
+/**
+ * Gift-wrap surcharge per line. Verified against the API's own pricing —
+ * POST /checkout/guest-quote returns `giftAddon: "1500"` for one wrapped line
+ * and "0" without — but there is no endpoint that exposes the figure on its
+ * own, so it is mirrored here for display. The quote returned at checkout is
+ * authoritative; if the API's figure changes, update this constant.
+ */
 const GIFT_ADDON = 1500;
 
 const packaging = [
@@ -21,21 +28,42 @@ const packaging = [
 
 /** Delivery choice + quantity stepper + Add to cart for the product page. */
 export default function ProductBuyBox({
+  productId,
   slug,
   price,
+  inStock,
+  stockQuantity,
 }: {
+  productId: string;
   slug: string;
   price: number;
+  inStock: boolean;
+  /** From GET /products/:slug — caps the stepper at what can actually ship. */
+  stockQuantity: number;
 }) {
   const [qty, setQty] = useState(1);
   const [gift, setGift] = useState(false);
   const { add } = useCart();
   const router = useRouter();
 
+  const max = stockQuantity > 0 ? stockQuantity : 1;
+
   const addToCart = () => {
-    add(slug, qty);
+    add({ productId, slug, qty, giftWrap: gift });
     router.push("/cart");
   };
+
+  if (!inStock) {
+    return (
+      <div className="mt-8 rounded-2xl border border-white/10 bg-white/[0.03] p-6">
+        <p className="text-[15px] font-bold text-white">Currently out of stock</p>
+        <p className="mt-2 text-[13px] leading-relaxed text-white/60">
+          This product can&apos;t be ordered right now. Browse the rest of the
+          catalogue in the meantime.
+        </p>
+      </div>
+    );
+  }
 
   const optionCard = (active: boolean) =>
     `rounded-2xl border p-5 text-left transition-colors ${
@@ -97,7 +125,7 @@ export default function ProductBuyBox({
           </div>
           <p className="mt-4 text-[13px] leading-relaxed text-white/60">
             You&apos;ll add the recipient&apos;s name, address and your gift
-            message during checkout. Adds {naira(GIFT_ADDON)} per book.
+            message during checkout. Adds {naira(GIFT_ADDON)} per item.
           </p>
         </div>
       )}
@@ -116,7 +144,8 @@ export default function ProductBuyBox({
           </span>
           <button
             aria-label="Increase quantity"
-            onClick={() => setQty((q) => q + 1)}
+            disabled={qty >= max}
+            onClick={() => setQty((q) => Math.min(max, q + 1))}
             className="flex h-7 w-7 items-center justify-center rounded-md text-white transition-colors hover:bg-white/10"
           >
             <Icon name="plus" size={16} />
