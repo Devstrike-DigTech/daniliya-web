@@ -26,6 +26,20 @@ export type QuoteResult =
 export async function requestQuote(formData: FormData): Promise<QuoteResult> {
   const str = (k: string) => (formData.get(k) as string | null)?.trim() || undefined;
 
+  // Attachment URLs come from the upload widget as a JSON array. Only a
+  // signed-in user can upload (the endpoint requires auth), so a guest quote
+  // simply carries none — the field isn't shown to them.
+  let attachments: string[] | undefined;
+  const raw = str("attachments");
+  if (raw) {
+    try {
+      const parsed = JSON.parse(raw) as string[];
+      if (Array.isArray(parsed) && parsed.length) attachments = parsed;
+    } catch {
+      /* ignore a malformed value rather than fail the whole request */
+    }
+  }
+
   const name = str("name");
   const email = str("email");
   const phone = str("phone");
@@ -56,6 +70,7 @@ export async function requestQuote(formData: FormData): Promise<QuoteResult> {
         address: str("address"),
         ...(budget !== undefined && !Number.isNaN(budget) ? { budget } : {}),
         ...(preferredDate ? { preferredDate } : {}),
+        ...(attachments ? { attachments } : {}),
       }),
     });
 

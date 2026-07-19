@@ -2,6 +2,7 @@
 
 import { useState, useTransition } from "react";
 import Icon from "@/components/Icon";
+import FileUpload, { type UploadedFile } from "@/components/FileUpload";
 import { requestQuote } from "@/app/quote-actions";
 
 /** GET /services — only what the picker needs. */
@@ -19,13 +20,17 @@ export default function QuoteRequestForm({
   services,
   defaultSlug,
   submitLabel = "Request a quote",
+  canUpload = false,
 }: {
   services: ServiceOption[];
   defaultSlug?: string;
   submitLabel?: string;
+  /** Only a signed-in user can attach photos — the upload endpoint needs auth. */
+  canUpload?: boolean;
 }) {
   const [done, setDone] = useState<{ ref: string; service: string | null } | null>(null);
   const [error, setError] = useState("");
+  const [files, setFiles] = useState<UploadedFile[]>([]);
   const [pending, startTransition] = useTransition();
 
   // A service that isn't taking work yet can't be requested — the API would
@@ -35,6 +40,7 @@ export default function QuoteRequestForm({
   const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
+    if (files.length) formData.set("attachments", JSON.stringify(files.map((f) => f.url)));
     setError("");
     startTransition(async () => {
       const res = await requestQuote(formData);
@@ -157,12 +163,22 @@ export default function QuoteRequestForm({
       </div>
 
       {/*
-        No attachments field. The booking API accepts `attachments` as a list of
-        URLs, but nothing in the platform can upload a file — the old dropzone
-        collected filenames and sent them nowhere. Asking a customer to paste
-        image URLs is worse than asking them to describe the job, so it is left
-        out until an upload endpoint exists.
+        Photos help us quote accurately, but the upload endpoint needs a signed-in
+        user, so a guest simply doesn't see this — they can still describe the job.
       */}
+      {canUpload && (
+        <div>
+          <label className={LABEL}>Photos (optional)</label>
+          <FileUpload
+            purpose="booking"
+            multiple
+            accept="image/jpeg,image/png,image/webp,application/pdf"
+            value={files}
+            onChange={setFiles}
+            hint="JPEG, PNG, WebP or PDF, up to 10MB each"
+          />
+        </div>
+      )}
 
       {error && (
         <p className="rounded-xl bg-red-50 px-4 py-3 text-sm font-bold text-red-600">{error}</p>

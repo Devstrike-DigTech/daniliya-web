@@ -8,7 +8,13 @@ import QuoteRequestForm, { type ServiceOption } from "@/components/QuoteRequestF
  * anything. Nothing was ever sent. It now posts to /bookings/quote and shows the
  * booking reference the API returns.
  */
-export default function ServiceQuoteForm({ services }: { services: ServiceOption[] }) {
+export default function ServiceQuoteForm({
+  services,
+  canUpload = false,
+}: {
+  services: ServiceOption[];
+  canUpload?: boolean;
+}) {
   return (
     <div>
       <p className="flex items-center gap-2.5 text-lg text-brand">
@@ -27,7 +33,7 @@ export default function ServiceQuoteForm({ services }: { services: ServiceOption
       </p>
 
       <div className="mt-8">
-        <QuoteRequestForm services={services} submitLabel="Send request" />
+        <QuoteRequestForm services={services} submitLabel="Send request" canUpload={canUpload} />
       </div>
     </div>
   );

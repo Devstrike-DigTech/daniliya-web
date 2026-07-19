@@ -15,6 +15,8 @@ export default async function QuotePage({ searchParams }: Props) {
   // ?service=laundry lets a vertical page deep-link into this form pre-filled.
   const { service } = await searchParams;
   const services = (await apiFetchSafe<ServiceDto[]>("/services")) ?? [];
+  // Attachments need a session; the widget is only offered when signed in.
+  const canUpload = (await apiFetchSafe<{ id: string }>("/auth/me")) !== null;
 
   return (
     <section className="bg-ink">
@@ -47,7 +49,7 @@ export default async function QuotePage({ searchParams }: Props) {
           </p>
 
           <div className="mt-8">
-            <QuoteRequestForm services={services} defaultSlug={service} />
+            <QuoteRequestForm services={services} defaultSlug={service} canUpload={canUpload} />
           </div>
         </div>
       </div>

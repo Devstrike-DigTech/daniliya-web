@@ -15,6 +15,7 @@ export default async function ServicesPage() {
   // Which services exist, and which are actually taking work, comes from the
   // API so operations can switch one off without a deploy.
   const services = (await apiFetchSafe<ServiceDto[]>("/services")) ?? [];
+  const canUpload = (await apiFetchSafe<{ id: string }>("/auth/me")) !== null;
 
   return (
     <>
@@ -47,7 +48,7 @@ export default async function ServicesPage() {
             </div>
           </Reveal>
           <Reveal delay={120}>
-            <ServiceQuoteForm services={services} />
+            <ServiceQuoteForm services={services} canUpload={canUpload} />
           </Reveal>
         </div>
       </section>
