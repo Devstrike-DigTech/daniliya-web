@@ -214,6 +214,21 @@ export default async function AccountPage() {
           </div>
         )}
 
+        {/* Support */}
+        <h2 className="mt-14 text-[24px] font-bold">Help</h2>
+        <div className="mt-5 flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-ink/10 bg-white p-5">
+          <p className="text-sm text-ink/65">
+            Something wrong with an order or a payment? Raise a request and we
+            reply in a thread you can follow.
+          </p>
+          <Link
+            href="/support"
+            className="inline-flex items-center gap-2 rounded-xl border border-brand px-5 py-3 text-sm font-bold text-brand transition-colors hover:bg-brand/10"
+          >
+            Help &amp; support
+          </Link>
+        </div>
+
         {/*
           Nothing here is editable: the API has no profile-update endpoint, so a
           "save details" form would have nowhere to post.

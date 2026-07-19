@@ -1,7 +1,10 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import Ambient from "@/components/Ambient";
 import Icon from "@/components/Icon";
 import ContactCards from "@/components/ContactCards";
+import { apiFetchSafe } from "@/lib/api";
+import NewTicketForm from "@/app/support/NewTicketForm";
 
 export const metadata: Metadata = {
   title: "Contact Us",
@@ -9,10 +12,12 @@ export const metadata: Metadata = {
     "Whether you need a quote, have a question, or want to explore a partnership — we're here and responsive.",
 };
 
-const inputStyle =
-  "w-full rounded-xl border border-ink/15 bg-white px-4 py-3 text-sm outline-none transition-colors placeholder:text-ink/35 focus:border-brand";
-
-export default function ContactPage() {
+export default async function ContactPage() {
+  // Raising a request needs an account — the support API has no public route —
+  // so a guest is pointed at the published channels rather than shown a form
+  // that cannot send. This page previously rendered an inert form that
+  // discarded whatever anyone typed into it.
+  const me = await apiFetchSafe<{ firstName: string }>("/auth/me");
   return (
     <section className="bg-ink">
       <Ambient theme="contact" />
@@ -34,97 +39,56 @@ export default function ContactPage() {
           </div>
         </div>
 
-        {/* Right — form */}
+        {/* Right — message panel */}
         <div className="fade-up fade-up-1 bg-paper px-4 py-16 sm:px-8 lg:py-20">
           <h2 className="text-[32px] font-bold sm:text-[40px]">
             Send us a <span className="text-gold">message</span>.
           </h2>
-          <p className="mt-2 text-[15px] text-ink/60">
-            Fill in the form and we&apos;ll get back to you within 2 hours
-            during business hours.
-          </p>
 
-          {/* TODO: wire to the contact endpoint once the API is deployed */}
-          <form className="mt-8 space-y-5">
-            <div className="grid gap-5 sm:grid-cols-2">
-              <div>
-                <label className="mb-1.5 block text-sm font-bold">
-                  First Name
-                </label>
-                <input
-                  type="text"
-                  placeholder="First Name"
-                  className={inputStyle}
-                  required
-                />
+          {me ? (
+            <>
+              <p className="mt-2 text-[15px] text-ink/60">
+                Raise a request and we&apos;ll reply in a thread you can follow
+                — every message stays in one place.
+              </p>
+              <div className="mt-8">
+                <NewTicketForm />
               </div>
-              <div>
-                <label className="mb-1.5 block text-sm font-bold">
-                  Last Name
-                </label>
-                <input
-                  type="text"
-                  placeholder="Last Name"
-                  className={inputStyle}
-                  required
-                />
+              <p className="mt-4 text-sm text-ink/55">
+                Already raised something?{" "}
+                <Link href="/support" className="font-bold text-brand hover:underline">
+                  See your requests
+                </Link>
+              </p>
+            </>
+          ) : (
+            <>
+              <p className="mt-2 text-[15px] text-ink/60">
+                The channels on the left reach the same team and are the quickest
+                way to get us if you don&apos;t have an account.
+              </p>
+              <div className="mt-8 rounded-2xl border border-ink/10 bg-white p-6">
+                <p className="font-bold">Want it tracked?</p>
+                <p className="mt-2 text-[15px] leading-relaxed text-ink/65">
+                  Sign in and your request gets a reference and a thread, so you
+                  can follow it and nothing gets buried in an inbox.
+                </p>
+                <Link
+                  href="/account"
+                  className="mt-5 inline-flex items-center gap-2 rounded-xl bg-brand px-5 py-3 text-sm font-bold text-white transition-opacity hover:opacity-90"
+                >
+                  Sign in or create an account <Icon name="arrow-right" size={16} />
+                </Link>
               </div>
-            </div>
-            <div className="grid gap-5 sm:grid-cols-2">
-              <div>
-                <label className="mb-1.5 block text-sm font-bold">
-                  Email Address
-                </label>
-                <input
-                  type="email"
-                  placeholder="e.g yourmail@gmail.com"
-                  className={inputStyle}
-                  required
-                />
-              </div>
-              <div>
-                <label className="mb-1.5 block text-sm font-bold">
-                  Phone / WhatsApp
-                </label>
-                <input
-                  type="tel"
-                  placeholder="e.g +2349283747..."
-                  className={inputStyle}
-                />
-              </div>
-            </div>
-            <div>
-              <label className="mb-1.5 block text-sm font-bold">
-                What do you need?
-              </label>
-              <select className={inputStyle} defaultValue="">
-                <option value="" disabled>
-                  Select a service inquiry or type
-                </option>
-                <option>Service quote</option>
-                <option>Product order</option>
-                <option>Affiliate programme</option>
-                <option>Influencer partnership</option>
-                <option>Vendor application</option>
-                <option>Something else</option>
-              </select>
-            </div>
-            <div>
-              <label className="mb-1.5 block text-sm font-bold">Message</label>
-              <textarea
-                rows={4}
-                placeholder="Tell us more about what you need"
-                className={inputStyle}
-              />
-            </div>
-            <button
-              type="submit"
-              className="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-brand py-4 text-sm font-bold text-white transition-opacity hover:opacity-90"
-            >
-              <Icon name="send" size={16} />
-              Send Message
-            </button>
-          </form>
+              <p className="mt-4 text-sm text-ink/55">
+                Chasing an order? You can{" "}
+                <Link href="/order/track" className="font-bold text-brand hover:underline">
+                  track it with its reference
+                </Link>{" "}
+                — no account needed.
+              </p>
+            </>
+          )}
         </div>
       </div>
     </section>
