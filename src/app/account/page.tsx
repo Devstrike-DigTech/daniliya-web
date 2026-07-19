@@ -4,6 +4,7 @@ import Icon from "@/components/Icon";
 import { apiFetchSafe } from "@/lib/api";
 import { naira } from "@/lib/format";
 import AccountAuth from "./AccountAuth";
+import ReviewButton from "./ReviewButton";
 import { signOut } from "./auth-actions";
 
 export const metadata: Metadata = { title: "Your account" };
@@ -24,6 +25,15 @@ type OrderRow = {
   createdAt: string;
   payment: { status: string; method: string } | null;
 };
+
+/** GET /orders/:ref — owner only; carries the line items. */
+type OrderDetail = {
+  ref: string;
+  items: { productId: string; title: string; quantity: number }[];
+};
+
+/** Reviewable once the order stands. Mirrors the API's own rule. */
+const REVIEWABLE: string[] = ["CONFIRMED", "DELIVERED", "COMPLETED"];
 
 /** GET /bookings */
 type BookingRow = {
@@ -71,6 +81,18 @@ export default async function AccountPage() {
     apiFetchSafe<OrderRow[]>("/orders"),
     apiFetchSafe<BookingRow[]>("/bookings"),
   ]);
+
+  // The list endpoint carries no line items, so the detail of each reviewable
+  // order is fetched to know what can be reviewed. Orders per customer are few;
+  // if that stops being true this wants a single endpoint returning items.
+  const details = await Promise.all(
+    (orders ?? [])
+      .filter((o) => REVIEWABLE.includes(o.status))
+      .map((o) => apiFetchSafe<OrderDetail>(`/orders/${o.ref}`)),
+  );
+  const itemsByRef = new Map(
+    details.filter(Boolean).map((d) => [d!.ref, d!.items]),
+  );
 
   return (
     <section className="bg-paper">
@@ -128,6 +150,20 @@ export default async function AccountPage() {
                     Track
                   </Link>
                 </div>
+
+                {/* Reviewing is only offered on orders that actually stand. */}
+                {(itemsByRef.get(o.ref) ?? []).length > 0 && (
+                  <div className="flex w-full flex-col gap-2 border-t border-ink/8 pt-4">
+                    {(itemsByRef.get(o.ref) ?? []).map((it) => (
+                      <div key={it.productId} className="flex flex-wrap items-center justify-between gap-2">
+                        <span className="text-sm text-ink/70">
+                          {it.title} × {it.quantity}
+                        </span>
+                        <ReviewButton productId={it.productId} title={it.title} />
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
             ))}
           </div>

@@ -5,6 +5,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import ProductCard from "@/components/ProductCard";
 import ProductBuyBox from "@/components/ProductBuyBox";
+import ProductReviews, { type ProductReviews as ProductReviewsData } from "@/components/ProductReviews";
 import ProductImage from "@/components/ProductImage";
 import { apiFetchSafe, type Paginated, type ProductCardDto, type ProductDetailDto } from "@/lib/api";
 import { naira } from "@/lib/format";
@@ -43,6 +44,9 @@ export default async function ProductPage({ params }: Props) {
       )
     : null;
   const similar = (related?.data ?? []).filter((p) => p.slug !== product.slug).slice(0, 3);
+
+  // Public — reviews render for everyone, signed in or not.
+  const reviews = await apiFetchSafe<ProductReviewsData>(`/products/${product.id}/reviews`);
 
   return (
     <>
@@ -128,6 +132,8 @@ export default async function ProductPage({ params }: Props) {
           </div>
         </div>
       </section>
+
+      <ProductReviews data={reviews} />
 
       {/* Similar products — omitted entirely when the category has no siblings. */}
       {similar.length > 0 && (
