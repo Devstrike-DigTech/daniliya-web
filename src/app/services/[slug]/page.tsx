@@ -10,6 +10,7 @@ import Reveal from "@/components/Reveal";
 import CountUp from "@/components/CountUp";
 import Icon from "@/components/Icon";
 import { verticals } from "@/lib/data";
+import { apiFetchSafe, type ServiceDto } from "@/lib/api";
 
 const AMBIENT_THEMES: Record<string, AmbientTheme> = {
   laundry: "cleaning",
@@ -19,10 +20,6 @@ const AMBIENT_THEMES: Record<string, AmbientTheme> = {
 };
 
 type Props = { params: Promise<{ slug: string }> };
-
-export function generateStaticParams() {
-  return verticals.map((v) => ({ slug: v.slug }));
-}
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
@@ -44,6 +41,29 @@ export default async function VerticalPage({ params }: Props) {
   const vertical = verticals.find((v) => v.slug === slug);
   if (!vertical) notFound();
 
+  // Presentation copy is local design content; whether the service is actually
+  // taking work is the API's call, so operations can close one without a deploy.
+  const services = (await apiFetchSafe<ServiceDto[]>("/services")) ?? [];
+  const live = services.find((s) => s.slug === slug);
+  const comingSoon = live?.comingSoon ?? false;
+  const quoteHref = `/quote?service=${slug}`;
+
+  /**
+   * Every quote call-to-action on this page. A service the API has flagged as
+   * coming soon says so rather than sending someone to a form that will not
+   * offer it — the form filters unavailable services out.
+   */
+  const QuoteCta = ({ dark, children }: { dark?: boolean; children: React.ReactNode }) =>
+    comingSoon ? (
+      <span className="inline-flex items-center gap-2 rounded-full border border-current/25 px-6 py-3 text-[15px] font-bold opacity-70">
+        Coming soon
+      </span>
+    ) : (
+      <PillArrowBtn href={quoteHref} dark={dark}>
+        {children}
+      </PillArrowBtn>
+    );
+
   return (
     <>
       <Ambient theme={AMBIENT_THEMES[vertical.slug] ?? "home"} />
@@ -62,7 +82,7 @@ export default async function VerticalPage({ params }: Props) {
                 {vertical.hero.text}
               </p>
               <div className="mt-6">
-                <PillArrowBtn href="/quote">{vertical.hero.cta}</PillArrowBtn>
+                <QuoteCta>{vertical.hero.cta}</QuoteCta>
               </div>
             </div>
           </div>
@@ -167,7 +187,7 @@ export default async function VerticalPage({ params }: Props) {
               ))}
             </div>
             <div className="mt-9">
-              <PillArrowBtn href="/quote">Get a Quote</PillArrowBtn>
+              <QuoteCta>Get a Quote</QuoteCta>
             </div>
           </Reveal>
         </div>
@@ -185,7 +205,7 @@ export default async function VerticalPage({ params }: Props) {
               {vertical.why.text}
             </p>
             <div className="mt-9">
-              <PillArrowBtn href="/quote">Get a Quote</PillArrowBtn>
+              <QuoteCta>Get a Quote</QuoteCta>
             </div>
           </Reveal>
 
@@ -239,7 +259,7 @@ export default async function VerticalPage({ params }: Props) {
                 <AccentText a={vertical.process.title} />
               </h2>
             </div>
-            <PillArrowBtn href="/quote">Get a Quote</PillArrowBtn>
+            <QuoteCta>Get a Quote</QuoteCta>
           </Reveal>
 
           <div className="mt-14 grid gap-8 lg:grid-cols-3">
@@ -304,9 +324,9 @@ export default async function VerticalPage({ params }: Props) {
               {vertical.cta.text}
             </p>
             <div className="mt-7">
-              <PillArrowBtn href="/quote" dark>
+              <QuoteCta dark>
                 {vertical.cta.button}
-              </PillArrowBtn>
+              </QuoteCta>
             </div>
           </Reveal>
         </div>

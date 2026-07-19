@@ -3,6 +3,7 @@ import Image from "next/image";
 import Icon from "@/components/Icon";
 import Reveal from "@/components/Reveal";
 import ServiceQuoteForm from "@/components/ServiceQuoteForm";
+import { apiFetchSafe, type ServiceDto } from "@/lib/api";
 
 export const metadata: Metadata = {
   title: "Our Services",
@@ -10,7 +11,11 @@ export const metadata: Metadata = {
     "Industrial cleaning and fumigation under your brand — get a tailored quote within 24 hours.",
 };
 
-export default function ServicesPage() {
+export default async function ServicesPage() {
+  // Which services exist, and which are actually taking work, comes from the
+  // API so operations can switch one off without a deploy.
+  const services = (await apiFetchSafe<ServiceDto[]>("/services")) ?? [];
+
   return (
     <>
       {/* Hero */}
@@ -42,7 +47,7 @@ export default function ServicesPage() {
             </div>
           </Reveal>
           <Reveal delay={120}>
-            <ServiceQuoteForm />
+            <ServiceQuoteForm services={services} />
           </Reveal>
         </div>
       </section>

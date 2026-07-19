@@ -79,6 +79,16 @@ export type ProductDetailDto = {
   images: string[];
 };
 
+/** GET /services — the service verticals and whether they are taking work. */
+export type ServiceDto = {
+  slug: string;
+  name: string;
+  description: string | null;
+  heroImage: string | null;
+  icon: string | null;
+  comingSoon: boolean;
+};
+
 export type Paginated<T> = {
   data: T[];
   meta: { page: number; limit: number; total: number; pages: number };
