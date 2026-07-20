@@ -6,7 +6,7 @@ import { notFound } from "next/navigation";
 import ProductCard from "@/components/ProductCard";
 import ProductBuyBox from "@/components/ProductBuyBox";
 import ProductReviews, { type ProductReviews as ProductReviewsData } from "@/components/ProductReviews";
-import ProductImage from "@/components/ProductImage";
+import ProductGallery from "@/components/ProductGallery";
 import { apiFetchSafe, type Paginated, type ProductCardDto, type ProductDetailDto } from "@/lib/api";
 import { naira } from "@/lib/format";
 
@@ -63,19 +63,7 @@ export default async function ProductPage({ params }: Props) {
           </Link>
         </div>
         <div className="mx-auto grid max-w-[1376px] items-center gap-12 px-4 pb-20 pt-8 sm:px-8 lg:grid-cols-2">
-          <div className="fade-up relative aspect-[5/4] w-full overflow-hidden rounded-2xl">
-            {/* `images` is empty for every product today — see ProductImage. */}
-            <ProductImage
-              src={product.images[0] ?? null}
-              alt={product.title}
-              sizes="(max-width: 1024px) 100vw, 50vw"
-              priority
-            />
-            <div
-              aria-hidden
-              className="absolute -bottom-2 -left-2 h-16 w-16 bg-[repeating-linear-gradient(135deg,var(--color-brand)_0,var(--color-brand)_4px,transparent_4px,transparent_9px)]"
-            />
-          </div>
+          <ProductGallery images={product.images} alt={product.title} />
           <div className="fade-up fade-up-1">
             <h1 className="text-[36px] font-bold leading-tight sm:text-[44px]">
               {product.title}
