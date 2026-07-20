@@ -13,6 +13,7 @@ export const metadata: Metadata = {
 type TrackedOrder = {
   ref: string;
   status: string;
+  fulfilmentMode: string;
   placedAt: string | null;
   confirmedAt: string | null;
   shippedAt: string | null;
@@ -21,6 +22,21 @@ type TrackedOrder = {
   trackingNumber: string | null;
   estimatedDelivery: string | null;
   items: { titleSnapshot: string; quantity: number }[];
+};
+
+/**
+ * How far along the fulfilment ladder a status sits — mirrors the API and the
+ * admin stepper. The timeline lights up by this rank, NOT only by which
+ * timestamps exist, so a "Packed" order (PROCESSING, which has no timestamp of
+ * its own) still shows as reached instead of stalling at "Confirmed".
+ */
+const STATUS_RANK: Record<string, number> = {
+  PENDING: 0,
+  CONFIRMED: 1,
+  PROCESSING: 2,
+  SHIPPED: 3,
+  DELIVERED: 4,
+  COMPLETED: 4,
 };
 
 const humanStatus = (s: string) =>
@@ -104,15 +120,28 @@ export default async function TrackOrderPage({
     );
   }
 
-  // The timeline is built only from timestamps the API actually returned.
+  const cancelled = order.status === "CANCELLED" || order.status === "REFUNDED";
+  const pickup = order.fulfilmentMode === "PICKUP";
+  const rank = STATUS_RANK[order.status] ?? 0;
+
+  // Each step is "done" once the order's status has reached its rank — so the
+  // timeline always matches the current status, even for stages with no
+  // timestamp (Packed). The exact time is shown when the API has one.
   const timeline = [
-    { title: "Order placed", text: "We received your order.", at: order.placedAt },
-    { title: "Confirmed", text: "Your order was confirmed.", at: order.confirmedAt },
-    { title: "Shipped", text: "Your order left our hub.", at: order.shippedAt },
-    { title: "Delivered", text: "Your order reached its destination.", at: order.deliveredAt },
-  ];
-  const doneCount = timeline.filter((s) => s.at).length;
-  const progress = Math.round((doneCount / timeline.length) * 100);
+    { title: "Order placed", text: "We received your order.", at: order.placedAt, rank: 0 },
+    { title: "Confirmed", text: "Your order was confirmed.", at: order.confirmedAt, rank: 1 },
+    { title: "Packed", text: "We're preparing your order.", at: null, rank: 2 },
+    pickup
+      ? { title: "Ready for pickup", text: "Collect it from our store.", at: order.shippedAt, rank: 3 }
+      : { title: "Shipped", text: "Your order left our hub.", at: order.shippedAt, rank: 3 },
+    pickup
+      ? { title: "Collected", text: "You picked up your order.", at: order.deliveredAt, rank: 4 }
+      : { title: "Delivered", text: "Your order reached its destination.", at: order.deliveredAt, rank: 4 },
+  ].map((s) => ({ ...s, done: !cancelled && rank >= s.rank }));
+
+  const progress = cancelled
+    ? 100
+    : Math.round((Math.min(rank, 4) / 4) * 100);
 
   return (
     <section className="mx-auto max-w-[1100px] px-4 py-12 sm:px-6">
@@ -155,8 +184,16 @@ export default async function TrackOrderPage({
             </div>
           </div>
           <div className="mt-5 h-2 overflow-hidden rounded-full bg-ink/10">
-            <div className="h-full rounded-full bg-brand" style={{ width: `${progress}%` }} />
+            <div
+              className={`h-full rounded-full ${cancelled ? "bg-red-500" : "bg-brand"}`}
+              style={{ width: `${progress}%` }}
+            />
           </div>
+          {cancelled && (
+            <p className="mt-3 text-sm font-bold text-red-600">
+              This order was {humanStatus(order.status).toLowerCase()} and is no longer being fulfilled.
+            </p>
+          )}
         </div>
 
         <div className="rounded-2xl bg-coal p-6 text-white">
@@ -191,7 +228,7 @@ export default async function TrackOrderPage({
         <ol className="rounded-2xl border border-ink/10 bg-white p-6 sm:p-8">
           {timeline.map((step, i) => {
             const last = i === timeline.length - 1;
-            const done = Boolean(step.at);
+            const done = step.done;
             return (
               <li key={step.title} className="relative flex gap-4 pb-8 last:pb-0">
                 {!last && (
