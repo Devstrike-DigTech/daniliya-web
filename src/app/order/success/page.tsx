@@ -44,10 +44,20 @@ const dateTime = (iso: string | null) =>
 export default async function OrderSuccessPage({
   searchParams,
 }: {
-  searchParams: Promise<{ ref?: string | string[] }>;
+  searchParams: Promise<{ ref?: string | string[]; reference?: string | string[] }>;
 }) {
-  const raw = (await searchParams).ref;
+  const sp = await searchParams;
+  const raw = sp.ref;
   const ref = Array.isArray(raw) ? raw[0] : raw;
+
+  // Paystack redirects back here after checkout, appending ?reference=…. Verify
+  // it now and confirm the order, rather than waiting on a webhook that can't
+  // reach a localhost API. Idempotent and safe if the webhook already ran.
+  const referenceRaw = sp.reference;
+  const reference = Array.isArray(referenceRaw) ? referenceRaw[0] : referenceRaw;
+  if (reference) {
+    await apiFetchSafe(`/payments/verify?reference=${encodeURIComponent(reference)}`);
+  }
 
   const order = ref
     ? await apiFetchSafe<TrackedOrder>(`/orders/track?ref=${encodeURIComponent(ref)}`)
