@@ -10,10 +10,8 @@ import QuoteRequestForm, { type ServiceOption } from "@/components/QuoteRequestF
  */
 export default function ServiceQuoteForm({
   services,
-  canUpload = false,
 }: {
   services: ServiceOption[];
-  canUpload?: boolean;
 }) {
   return (
     <div>
@@ -33,7 +31,7 @@ export default function ServiceQuoteForm({
       </p>
 
       <div className="mt-8">
-        <QuoteRequestForm services={services} submitLabel="Send request" canUpload={canUpload} />
+        <QuoteRequestForm services={services} submitLabel="Send request" />
       </div>
     </div>
   );

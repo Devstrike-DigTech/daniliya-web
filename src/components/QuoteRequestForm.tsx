@@ -20,13 +20,10 @@ export default function QuoteRequestForm({
   services,
   defaultSlug,
   submitLabel = "Request a quote",
-  canUpload = false,
 }: {
   services: ServiceOption[];
   defaultSlug?: string;
   submitLabel?: string;
-  /** Only a signed-in user can attach photos — the upload endpoint needs auth. */
-  canUpload?: boolean;
 }) {
   const [done, setDone] = useState<{ ref: string; service: string | null } | null>(null);
   const [error, setError] = useState("");
@@ -162,23 +159,19 @@ export default function QuoteRequestForm({
         </div>
       </div>
 
-      {/*
-        Photos help us quote accurately, but the upload endpoint needs a signed-in
-        user, so a guest simply doesn't see this — they can still describe the job.
-      */}
-      {canUpload && (
-        <div>
-          <label className={LABEL}>Photos (optional)</label>
-          <FileUpload
-            purpose="booking"
-            multiple
-            accept="image/jpeg,image/png,image/webp,application/pdf"
-            value={files}
-            onChange={setFiles}
-            hint="JPEG, PNG, WebP or PDF, up to 10MB each"
-          />
-        </div>
-      )}
+      {/* Photos help us quote accurately — optional, and open to guests too
+          (the quote form takes anyone; the upload uses the public path). */}
+      <div>
+        <label className={LABEL}>Photos (optional)</label>
+        <FileUpload
+          purpose="booking"
+          multiple
+          accept="image/jpeg,image/png,image/webp,application/pdf"
+          value={files}
+          onChange={setFiles}
+          hint="JPEG, PNG, WebP or PDF, up to 10MB each"
+        />
+      </div>
 
       {error && (
         <p className="rounded-xl bg-red-50 px-4 py-3 text-sm font-bold text-red-600">{error}</p>
