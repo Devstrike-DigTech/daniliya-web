@@ -13,10 +13,12 @@ import { naira } from "@/lib/format";
 type Props = { params: Promise<{ slug: string }> };
 
 /**
- * No `generateStaticParams` on purpose: slugs live in the API, not in the
- * bundle. Prerendering a build-time list would bake in products that may since
- * have been delisted (and 404 for ones added after the build).
+ * Always render against live data. Products are created/published from the admin
+ * at runtime, so a slug must be resolved on every request — otherwise the CDN
+ * can cache a 404 for a product that is added moments later and keep serving it.
+ * No `generateStaticParams` for the same reason: slugs live in the API.
  */
+export const dynamic = "force-dynamic";
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
