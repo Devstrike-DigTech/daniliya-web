@@ -26,7 +26,7 @@ const valueCards: ValueCard[] = [
     text: "A practical, no-fluff guide to stacking income streams.",
     img: "/images/products/the-daniliya-method.jpg",
     grad: "from-[#b5923a] to-[#7c6224]",
-    href: "/shop/the-daniliya-method",
+    href: "/shop/builders-handbook",
   },
   {
     n: "02",

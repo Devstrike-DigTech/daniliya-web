@@ -363,7 +363,7 @@ export type Product = {
 // show "The Daniliya Method" at ₦5,000 — to be resolved with the client).
 export const products: Product[] = [
   {
-    slug: "the-daniliya-method",
+    slug: "builders-handbook",
     title: "The Daniliya Method",
     category: "Books",
     chip: "Digital",

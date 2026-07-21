@@ -89,7 +89,7 @@ const slides: Slide[] = [
       </>
     ),
     body: "By Samuel Nuhu Iliya — a practical, no-fluff guide to stacking income streams from cleaning, dry cleaning, marketplace commerce and affiliate marketing.",
-    cta: { label: "Buy Now", href: "/shop/the-daniliya-method", icon: "wallet" },
+    cta: { label: "Buy Now", href: "/shop/builders-handbook", icon: "wallet" },
     secondary: { label: "Gift & Package", href: "/shop", icon: "package" },
     visual: "book",
   },

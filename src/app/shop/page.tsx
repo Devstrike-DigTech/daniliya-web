@@ -17,7 +17,7 @@ const STRIPE =
 const avatars = ["avatar-1", "avatar-2", "avatar-3"];
 
 /** The book the hero is built around. Its copy comes from GET /products/:slug. */
-const HERO_SLUG = "the-builders-handbook";
+const HERO_SLUG = "builders-handbook";
 
 const PAGE_SIZE = 24; // GET /products caps `limit` at 60.
 
