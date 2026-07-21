@@ -12,6 +12,13 @@ export async function POST(req: Request) {
   const body = await req.json();
   const token = (await cookies()).get(ACCESS_COOKIE)?.value;
 
+  // Tell the API which storefront this checkout came from so Paystack returns
+  // the buyer to the same site (local/dev/staging/prod) rather than a fixed
+  // WEB_APP_URL. Sent as a header (not a body field) so an API that predates
+  // this ignores it instead of rejecting the request; the API only honours it
+  // if the origin is in its CORS allow-list.
+  const returnOrigin = req.headers.get("origin") ?? new URL(req.url).origin;
+
   // Always order the cart the shopper saw, for the same reason the quote route
   // does: /orders places the server-side cart, which on this storefront is a
   // different basket to the one on screen. The guest endpoint attaches the
@@ -21,6 +28,7 @@ export async function POST(req: Request) {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
+      "X-Return-Origin": returnOrigin,
       ...(token ? { Authorization: `Bearer ${token}` } : {}),
     },
     body: JSON.stringify(body),
