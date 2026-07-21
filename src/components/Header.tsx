@@ -103,7 +103,7 @@ export default function Header() {
                 })}
                 <div className="my-2 border-t border-white/10" />
                 <Link
-                  href="/shop/builders-handbook"
+                  href="/shop"
                   onClick={() => setOpen(false)}
                   className="block rounded-lg border border-white/25 px-4 py-2.5 text-center text-[15px] font-bold text-white transition-colors hover:border-white"
                 >

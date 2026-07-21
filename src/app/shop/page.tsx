@@ -4,7 +4,18 @@ import Link from "next/link";
 import Icon from "@/components/Icon";
 import ProductImage from "@/components/ProductImage";
 import ShopCatalogue from "@/components/ShopCatalogue";
-import { apiFetchSafe, type Paginated, type ProductCardDto, type ProductDetailDto } from "@/lib/api";
+import { apiFetchSafe, type Paginated, type ProductCardDto } from "@/lib/api";
+
+/** GET /products/featured-book — the admin-designated Builder's Handbook. */
+type FeaturedBook = {
+  slug: string;
+  title: string;
+  description: string | null;
+  price: string;
+  images: string[];
+  status: string;
+  available: boolean;
+};
 
 export const metadata: Metadata = {
   title: "Book & Shop",
@@ -15,9 +26,6 @@ export const metadata: Metadata = {
 const STRIPE =
   "repeating-linear-gradient(45deg, var(--color-brand) 0 9px, var(--color-ink) 9px 18px)";
 const avatars = ["avatar-1", "avatar-2", "avatar-3"];
-
-/** The book the hero is built around. Its copy comes from GET /products/:slug. */
-const HERO_SLUG = "builders-handbook";
 
 const PAGE_SIZE = 24; // GET /products caps `limit` at 60.
 
@@ -38,8 +46,12 @@ export default async function ShopPage({ searchParams }: Props) {
   const [listing, categories, book] = await Promise.all([
     apiFetchSafe<Paginated<ProductCardDto>>(`/products?${query}`),
     apiFetchSafe<string[]>("/products/categories"),
-    apiFetchSafe<ProductDetailDto>(`/products/${HERO_SLUG}`),
+    apiFetchSafe<FeaturedBook>("/products/featured-book"),
   ]);
+
+  // A featured book can be buyable, present-but-unavailable (draft/out of stock),
+  // or not set at all — the hero renders a different CTA for each.
+  const bookHref = book?.available ? `/shop/${book.slug}` : "/shop";
 
   const products = listing?.data ?? [];
   const meta = listing?.meta;
@@ -77,19 +89,23 @@ export default async function ShopPage({ searchParams }: Props) {
               <span className="text-[15px] text-white/85">Active Reads</span>
             </div>
 
-            <h1 className="mt-7 text-[clamp(44px,7vw,80px)] font-extrabold uppercase leading-[0.95] tracking-tight">
-              BUILDER&apos;S
-              <br />
-              <span className="text-brand">HANDBOOK</span>
+            <h1 className="mt-7 text-[clamp(40px,6vw,72px)] font-extrabold uppercase leading-[0.95] tracking-tight">
+              {book ? book.title : "Builder's Handbook"}
             </h1>
-            {/* The API returns `description: null` for this product today, so the
-                strapline simply does not render rather than showing filler. */}
-            {book?.description && (
+            {book?.description ? (
               <p className="mx-auto mt-6 max-w-md text-[15.5px] leading-relaxed text-white/70 lg:mx-0">
                 {book.description}
               </p>
+            ) : (
+              !book && (
+                <p className="mx-auto mt-6 max-w-md text-[15.5px] leading-relaxed text-white/60 lg:mx-0">
+                  The Builder&apos;s Handbook isn&apos;t available yet — check back
+                  soon.
+                </p>
+              )
             )}
-            {book && (
+
+            {book && book.available ? (
               <div className="mt-8 flex flex-wrap justify-center gap-4 lg:justify-start">
                 <Link
                   href={`/shop/${book.slug}`}
@@ -104,6 +120,12 @@ export default async function ShopPage({ searchParams }: Props) {
                   <Icon name="package" size={16} /> Gift &amp; Package
                 </Link>
               </div>
+            ) : (
+              <div className="mt-8 flex justify-center lg:justify-start">
+                <span className="inline-flex items-center gap-2 rounded-xl border border-white/20 px-8 py-4 text-[15px] font-bold text-white/60">
+                  <Icon name="clock" size={16} /> Currently unavailable
+                </span>
+              </div>
             )}
           </div>
 
@@ -116,7 +138,7 @@ export default async function ShopPage({ searchParams }: Props) {
               style={{ background: STRIPE }}
             />
             <Link
-              href={book ? `/shop/${book.slug}` : "/shop"}
+              href={bookHref}
               className="float-slow relative z-10 mx-auto block h-full w-[68%] overflow-hidden rounded-xl shadow-2xl"
             >
               <ProductImage
