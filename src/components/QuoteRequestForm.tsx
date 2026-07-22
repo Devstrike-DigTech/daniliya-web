@@ -2,6 +2,7 @@
 
 import { useState, useTransition } from "react";
 import Icon from "@/components/Icon";
+import DatePicker from "@/components/DatePicker";
 import FileUpload, { type UploadedFile } from "@/components/FileUpload";
 import { requestQuote } from "@/app/quote-actions";
 
@@ -155,7 +156,7 @@ export default function QuoteRequestForm({
         </div>
         <div>
           <label htmlFor="preferredDate" className={LABEL}>Preferred date</label>
-          <input id="preferredDate" name="preferredDate" type="date" className={FIELD} />
+          <DatePicker id="preferredDate" name="preferredDate" className={FIELD} placeholder="Pick a date" />
         </div>
       </div>
 
