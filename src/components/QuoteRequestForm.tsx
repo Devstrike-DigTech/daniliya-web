@@ -156,7 +156,7 @@ export default function QuoteRequestForm({
         </div>
         <div>
           <label htmlFor="preferredDate" className={LABEL}>Preferred date</label>
-          <DatePicker id="preferredDate" name="preferredDate" className={FIELD} placeholder="Pick a date" />
+          <DatePicker id="preferredDate" name="preferredDate" className={FIELD} placeholder="Pick a date" disablePast />
         </div>
       </div>
 

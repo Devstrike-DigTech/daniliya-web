@@ -20,31 +20,52 @@ function prettyLabel(value: string): string {
 }
 
 /**
- * Branded calendar field. Renders a styled trigger + popover calendar and keeps
- * a hidden <input name={name}> in sync with "YYYY-MM-DD", so it drops into any
- * FormData-based form exactly where a native <input type="date"> sat.
+ * Branded calendar field. Renders a styled trigger + popover calendar in the
+ * "YYYY-MM-DD" format a native <input type="date"> uses.
+ *
+ * Two modes:
+ *  - Uncontrolled / FormData: pass `name` and it keeps a hidden input in sync,
+ *    so it drops straight into any form that reads FormData.
+ *  - Controlled: pass `value` + `onChange`, for React-state driven forms.
  */
 export default function DatePicker({
   name,
   id,
   className = "",
   min,
+  disablePast = false,
   placeholder = "Select a date",
+  value: controlledValue,
+  defaultValue,
+  onChange,
 }: {
-  name: string;
+  name?: string;
   id?: string;
   className?: string;
-  /** Earliest selectable day as "YYYY-MM-DD". Defaults to today (no past dates). */
+  /** Earliest selectable day as "YYYY-MM-DD". */
   min?: string;
+  /** Convenience: disable every day before today. */
+  disablePast?: boolean;
   placeholder?: string;
+  value?: string;
+  /** Initial value for uncontrolled (FormData) use. */
+  defaultValue?: string;
+  onChange?: (value: string) => void;
 }) {
   const now = new Date();
   const todayIso = iso(now.getFullYear(), now.getMonth(), now.getDate());
-  const minIso = min ?? todayIso;
+  const minIso = min ?? (disablePast ? todayIso : undefined);
 
-  const [value, setValue] = useState("");
+  const [internal, setInternal] = useState(defaultValue ?? "");
+  const value = controlledValue ?? internal;
+  const setValue = (v: string) => (onChange ? onChange(v) : setInternal(v));
+
   const [open, setOpen] = useState(false);
-  const [view, setView] = useState({ y: now.getFullYear(), m: now.getMonth() });
+  const initial = value ? value.split("-").map(Number) : null;
+  const [view, setView] = useState({
+    y: initial ? initial[0] : now.getFullYear(),
+    m: initial ? initial[1] - 1 : now.getMonth(),
+  });
   const rootRef = useRef<HTMLDivElement>(null);
 
   // Close on outside click or Escape.
@@ -61,6 +82,15 @@ export default function DatePicker({
       document.removeEventListener("keydown", onKey);
     };
   }, [open]);
+
+  // When opening, jump the view to the selected month (if any).
+  const openPicker = () => {
+    if (value) {
+      const [y, m] = value.split("-").map(Number);
+      setView({ y, m: m - 1 });
+    }
+    setOpen((o) => !o);
+  };
 
   const grid = useMemo(() => {
     const first = new Date(view.y, view.m, 1).getDay(); // 0=Sun
@@ -82,12 +112,12 @@ export default function DatePicker({
 
   return (
     <div ref={rootRef} className="relative">
-      <input type="hidden" name={name} value={value} />
+      {name && <input type="hidden" name={name} value={value} />}
 
       <button
         type="button"
         id={id}
-        onClick={() => setOpen((o) => !o)}
+        onClick={openPicker}
         aria-haspopup="dialog"
         aria-expanded={open}
         className={`flex items-center justify-between gap-2 text-left ${className} ${value ? "text-ink" : "text-ink/35"}`}
@@ -136,7 +166,7 @@ export default function DatePicker({
               const cell = iso(view.y, view.m, d);
               const selected = cell === value;
               const isToday = cell === todayIso;
-              const disabled = cell < minIso;
+              const disabled = minIso ? cell < minIso : false;
               return (
                 <button
                   key={i}
@@ -158,7 +188,10 @@ export default function DatePicker({
           <div className="mt-3 flex items-center justify-between border-t border-ink/8 pt-3">
             <button
               type="button"
-              onClick={() => setValue("")}
+              onClick={() => {
+                setValue("");
+                setOpen(false);
+              }}
               className="text-xs font-bold text-ink/45 transition-colors hover:text-ink"
             >
               Clear
@@ -167,7 +200,8 @@ export default function DatePicker({
               type="button"
               onClick={() => {
                 setView({ y: now.getFullYear(), m: now.getMonth() });
-                pick(now.getDate());
+                setValue(todayIso);
+                setOpen(false);
               }}
               className="text-xs font-bold text-brand hover:underline"
             >
