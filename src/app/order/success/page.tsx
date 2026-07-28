@@ -21,7 +21,7 @@ type TrackedOrder = {
   courier: string | null;
   trackingNumber: string | null;
   estimatedDelivery: string | null;
-  items: { titleSnapshot: string; quantity: number }[];
+  items: { titleSnapshot: string; variantName: string | null; quantity: number }[];
 };
 
 const humanStatus = (s: string) =>
@@ -161,7 +161,12 @@ export default async function OrderSuccessPage({
                   <Icon name="package" size={22} />
                 </span>
                 <div>
-                  <p className="text-sm font-bold">{item.titleSnapshot}</p>
+                  <p className="text-sm font-bold">
+                    {item.titleSnapshot}
+                    {item.variantName ? (
+                      <span className="ml-1.5 font-normal text-ink/50">· {item.variantName}</span>
+                    ) : null}
+                  </p>
                   <p className="mt-0.5 text-xs text-ink/50">Qty: {item.quantity}</p>
                 </div>
               </li>
