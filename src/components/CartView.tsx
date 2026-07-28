@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import Icon from "@/components/Icon";
-import { useCart } from "@/components/CartContext";
+import { useCart, lineKey } from "@/components/CartContext";
 import { naira } from "@/lib/format";
 
 /**
@@ -62,10 +62,10 @@ export default function CartView() {
           </p>
           <ul className="mt-3 space-y-2">
             {unavailable.map((l) => (
-              <li key={l.productId} className="flex items-center justify-between gap-3 text-sm">
+              <li key={lineKey(l.productId, l.variantId)} className="flex items-center justify-between gap-3 text-sm">
                 <span className="text-amber-900/80">{l.slug}</span>
                 <button
-                  onClick={() => remove(l.productId)}
+                  onClick={() => remove(lineKey(l.productId, l.variantId))}
                   className="font-bold text-amber-900 hover:underline"
                 >
                   Remove
@@ -81,7 +81,7 @@ export default function CartView() {
         <div className="space-y-4">
           {items.map((item) => (
             <div
-              key={item.productId}
+              key={item.key}
               className="flex gap-4 rounded-2xl border border-ink/10 bg-white p-4 sm:p-5"
             >
               <Link
@@ -117,7 +117,7 @@ export default function CartView() {
                   </div>
                   <button
                     aria-label={`Remove ${item.title}`}
-                    onClick={() => remove(item.productId)}
+                    onClick={() => remove(item.key)}
                     className="text-ink/40 transition-colors hover:text-red-500"
                   >
                     <Icon name="close" size={18} />
@@ -127,7 +127,7 @@ export default function CartView() {
                   <div className="flex items-center gap-3 rounded-full bg-ink/5 px-3 py-1.5">
                     <button
                       aria-label="Decrease"
-                      onClick={() => setQty(item.productId, item.qty - 1)}
+                      onClick={() => setQty(item.key, item.qty - 1)}
                       className="text-ink/70 hover:text-ink"
                     >
                       <Icon name="minus" size={14} />
@@ -137,7 +137,7 @@ export default function CartView() {
                     </span>
                     <button
                       aria-label="Increase"
-                      onClick={() => setQty(item.productId, item.qty + 1)}
+                      onClick={() => setQty(item.key, item.qty + 1)}
                       className="text-ink/70 hover:text-ink"
                     >
                       <Icon name="plus" size={14} />
@@ -149,7 +149,7 @@ export default function CartView() {
                   <input
                     type="checkbox"
                     checked={Boolean(item.giftWrap)}
-                    onChange={(e) => setGiftWrap(item.productId, e.target.checked)}
+                    onChange={(e) => setGiftWrap(item.key, e.target.checked)}
                     className="h-4 w-4 accent-brand"
                   />
                   Gift wrap this item

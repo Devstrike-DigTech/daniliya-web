@@ -54,12 +54,24 @@ export async function apiFetchSafe<T>(path: string, init?: RequestInit): Promise
 
 // ── Catalogue shapes (GET /products, GET /products/:slug) ──────────────────
 
+export type ProductVariantType = "CLOTHING_SIZE" | "DIMENSION" | "WEIGHT" | "OTHER";
+
+export type ProductVariantDto = {
+  id: string;
+  name: string;
+  price: string;
+  inStock: boolean;
+  stockQuantity: number;
+};
+
 export type ProductCardDto = {
   id: string;
   slug: string;
   title: string;
   blurb: string | null;
   price: string;
+  /** True when `price` is a sized product's lowest — show it as "from ₦X". */
+  fromPrice?: boolean;
   category: string | null;
   inStock: boolean;
   image: string | null;
@@ -71,7 +83,10 @@ export type ProductDetailDto = {
   slug: string;
   title: string;
   description: string | null;
+  /** For a sized product, the lowest size ("from") price. */
   price: string;
+  variantType: ProductVariantType | null;
+  variants: ProductVariantDto[];
   category: string | null;
   inStock: boolean;
   stockQuantity: number;

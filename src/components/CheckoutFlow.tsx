@@ -90,6 +90,7 @@ export default function CheckoutFlow() {
     () =>
       items.map((i) => ({
         productId: i.productId,
+        ...(i.variantId ? { variantId: i.variantId } : {}),
         quantity: i.qty,
         giftWrap: Boolean(i.giftWrap),
       })),
@@ -134,9 +135,9 @@ export default function CheckoutFlow() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [mode, payloadKey]);
 
-  const bump = (productId: string, delta: number) => {
-    const line = items.find((i) => i.productId === productId);
-    if (line) setCartQty(productId, line.qty + delta);
+  const bump = (key: string, delta: number) => {
+    const line = items.find((i) => i.key === key);
+    if (line) setCartQty(key, line.qty + delta);
   };
 
   const validate = useCallback(() => {
@@ -431,7 +432,7 @@ export default function CheckoutFlow() {
           ) : (
             <ul className="mt-4 divide-y divide-ink/10">
               {items.map((item) => (
-                <li key={item.productId} className="flex gap-4 py-4">
+                <li key={item.key} className="flex gap-4 py-4">
                   <span className="relative h-16 w-16 shrink-0 overflow-hidden rounded-xl bg-ink/5">
                     {item.image ? (
                       <Image
@@ -453,7 +454,7 @@ export default function CheckoutFlow() {
                       <button
                         type="button"
                         aria-label={`Remove ${item.title}`}
-                        onClick={() => remove(item.productId)}
+                        onClick={() => remove(item.key)}
                         className="text-red-500/70 transition-colors hover:text-red-500"
                       >
                         <Icon name="close" size={16} />
@@ -465,7 +466,7 @@ export default function CheckoutFlow() {
                         <button
                           type="button"
                           aria-label="Decrease"
-                          onClick={() => bump(item.productId, -1)}
+                          onClick={() => bump(item.key, -1)}
                           className="text-ink/70 hover:text-ink"
                         >
                           <Icon name="minus" size={14} />
@@ -476,7 +477,7 @@ export default function CheckoutFlow() {
                         <button
                           type="button"
                           aria-label="Increase"
-                          onClick={() => bump(item.productId, 1)}
+                          onClick={() => bump(item.key, 1)}
                           className="text-ink/70 hover:text-ink"
                         >
                           <Icon name="plus" size={14} />
@@ -487,7 +488,7 @@ export default function CheckoutFlow() {
                       <input
                         type="checkbox"
                         checked={Boolean(item.giftWrap)}
-                        onChange={(e) => setGiftWrap(item.productId, e.target.checked)}
+                        onChange={(e) => setGiftWrap(item.key, e.target.checked)}
                         className="h-3.5 w-3.5 accent-brand"
                       />
                       Gift wrap

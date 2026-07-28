@@ -4,7 +4,15 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import Icon from "@/components/Icon";
 import { useCart } from "@/components/CartContext";
+import type { ProductVariantDto, ProductVariantType } from "@/lib/api";
 import { naira } from "@/lib/format";
+
+const SIZE_LABEL: Record<ProductVariantType, string> = {
+  CLOTHING_SIZE: "Size",
+  DIMENSION: "Dimensions",
+  WEIGHT: "Weight",
+  OTHER: "Option",
+};
 
 /**
  * Gift-wrap surcharge per line. Verified against the API's own pricing —
@@ -33,6 +41,8 @@ export default function ProductBuyBox({
   price,
   inStock,
   stockQuantity,
+  variantType = null,
+  variants = [],
 }: {
   productId: string;
   slug: string;
@@ -40,16 +50,40 @@ export default function ProductBuyBox({
   inStock: boolean;
   /** From GET /products/:slug — caps the stepper at what can actually ship. */
   stockQuantity: number;
+  variantType?: ProductVariantType | null;
+  variants?: ProductVariantDto[];
 }) {
+  const hasSizes = !!variantType && variants.length > 0;
+
   const [qty, setQty] = useState(1);
   const [gift, setGift] = useState(false);
+  // Default to the first in-stock size, else the first.
+  const [variantId, setVariantId] = useState<string | null>(
+    hasSizes ? (variants.find((v) => v.inStock) ?? variants[0]).id : null,
+  );
   const { add } = useCart();
   const router = useRouter();
 
-  const max = stockQuantity > 0 ? stockQuantity : 1;
+  const selected = hasSizes ? variants.find((v) => v.id === variantId) ?? null : null;
+  const activePrice = selected ? Number(selected.price) : price;
+  const activeStock = selected ? selected.stockQuantity : stockQuantity;
+  const canBuy = selected ? selected.inStock : inStock;
+
+  const max = activeStock > 0 ? activeStock : 1;
+
+  const pickSize = (v: ProductVariantDto) => {
+    setVariantId(v.id);
+    setQty((q) => Math.min(q, v.stockQuantity > 0 ? v.stockQuantity : 1));
+  };
 
   const addToCart = () => {
-    add({ productId, slug, qty, giftWrap: gift });
+    add({
+      productId,
+      slug,
+      ...(selected ? { variantId: selected.id, variantName: selected.name } : {}),
+      qty,
+      giftWrap: gift,
+    });
     router.push("/cart");
   };
 
@@ -74,6 +108,37 @@ export default function ProductBuyBox({
 
   return (
     <div className="mt-8">
+      {hasSizes && variantType && (
+        <div className="mb-8">
+          <div className="flex items-baseline justify-between">
+            <p className="text-[17px] font-bold text-white">Choose {SIZE_LABEL[variantType].toLowerCase()}</p>
+            {selected && (
+              <p className="text-[15px] font-bold text-brand">{naira(activePrice)}</p>
+            )}
+          </div>
+          <div className="mt-3 flex flex-wrap gap-2.5">
+            {variants.map((v) => {
+              const active = v.id === variantId;
+              return (
+                <button
+                  key={v.id}
+                  type="button"
+                  disabled={!v.inStock}
+                  onClick={() => pickSize(v)}
+                  className={`rounded-xl border px-4 py-2.5 text-[14px] font-bold transition-colors ${
+                    active
+                      ? "border-brand bg-brand/[0.12] text-white"
+                      : "border-white/15 text-white/75 hover:border-white/35"
+                  } ${!v.inStock ? "cursor-not-allowed text-white/25 line-through" : ""}`}
+                >
+                  {v.name}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
       <p className="text-[17px] font-bold text-white">Choose how to receive it</p>
       <div className="mt-3 grid gap-4 sm:grid-cols-2">
         <button type="button" onClick={() => setGift(false)} className={optionCard(!gift)}>
@@ -87,7 +152,7 @@ export default function ProductBuyBox({
             Standard delivery in branded packaging. Arrives in 2–5 working days
             nationwide.
           </span>
-          <span className="mt-3 block text-[17px] font-bold text-brand">{naira(price)}</span>
+          <span className="mt-3 block text-[17px] font-bold text-brand">{naira(activePrice)}</span>
         </button>
 
         <button type="button" onClick={() => setGift(true)} className={optionCard(gift)}>
@@ -153,9 +218,10 @@ export default function ProductBuyBox({
         </div>
         <button
           onClick={addToCart}
-          className="inline-flex flex-1 items-center justify-center gap-2 rounded-xl bg-brand px-8 py-4 text-[15px] font-bold text-white transition-opacity hover:opacity-90 sm:flex-none"
+          disabled={!canBuy}
+          className="inline-flex flex-1 items-center justify-center gap-2 rounded-xl bg-brand px-8 py-4 text-[15px] font-bold text-white transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50 sm:flex-none"
         >
-          <Icon name="plus" size={16} /> Add to cart
+          <Icon name="plus" size={16} /> {canBuy ? "Add to cart" : "Size unavailable"}
         </button>
       </div>
     </div>

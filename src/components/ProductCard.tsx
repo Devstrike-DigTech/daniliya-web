@@ -70,7 +70,12 @@ export default function ProductCard({
           </p>
         )}
         <div className="mt-3 flex items-center justify-between gap-3">
-          <p className="flex items-baseline gap-2">
+          <p className="flex items-baseline gap-1.5">
+            {product.fromPrice && (
+              <span className={`text-[12px] font-bold uppercase tracking-wide ${dark ? "text-white/45" : "text-ink/40"}`}>
+                from
+              </span>
+            )}
             <span className={`text-[17px] font-bold ${dark ? "text-white" : ""}`}>
               {naira(price)}
             </span>
@@ -79,6 +84,7 @@ export default function ProductCard({
             productId={product.id}
             slug={product.slug}
             inStock={product.inStock}
+            hasSizes={product.fromPrice}
           />
         </div>
       </div>

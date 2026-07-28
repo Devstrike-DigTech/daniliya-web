@@ -106,6 +106,8 @@ export default async function ProductPage({ params }: Props) {
               price={Number(product.price)}
               inStock={product.inStock}
               stockQuantity={product.stockQuantity}
+              variantType={product.variantType}
+              variants={product.variants}
             />
 
             <div className="mt-8 space-y-3 rounded-2xl bg-white/5 p-6 ring-1 ring-white/10">

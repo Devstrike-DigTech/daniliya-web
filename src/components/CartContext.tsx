@@ -16,14 +16,29 @@ import {
  * show an out-of-date price or resurrect a delisted product. The order total is
  * computed server-side at checkout regardless — this is display only.
  */
-export type CartLine = { productId: string; slug: string; qty: number; giftWrap?: boolean };
+export type CartLine = {
+  productId: string;
+  slug: string;
+  /** The chosen size, when the product has sizes. */
+  variantId?: string | null;
+  variantName?: string | null;
+  qty: number;
+  giftWrap?: boolean;
+};
 
 export type CartItem = CartLine & {
+  /** Stable per-line key: a product+size pair is one line, distinct from the
+   *  same product in another size. */
+  key: string;
   title: string;
   price: number;
   image: string | null;
   inStock: boolean;
 };
+
+/** A product in two sizes is two lines; the same product+size is one. */
+export const lineKey = (productId: string, variantId?: string | null) =>
+  variantId ? `${productId}::${variantId}` : productId;
 
 const STORAGE_KEY = "daniliya-cart-v2";
 
@@ -37,9 +52,9 @@ type CartValue = {
   subtotal: number;
   ready: boolean;
   add: (line: Omit<CartLine, "qty"> & { qty?: number }) => void;
-  setQty: (productId: string, qty: number) => void;
-  setGiftWrap: (productId: string, giftWrap: boolean) => void;
-  remove: (productId: string) => void;
+  setQty: (key: string, qty: number) => void;
+  setGiftWrap: (key: string, giftWrap: boolean) => void;
+  remove: (key: string) => void;
   clear: () => void;
 };
 
@@ -95,14 +110,24 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
             const res = await fetch(`/api/products/${line.slug}`);
             if (!res.ok) return null;
             const p = await res.json();
+            const key = lineKey(line.productId, line.variantId);
+            // For a sized line, price/stock/name come from the chosen size.
+            const variant = line.variantId
+              ? (p.variants ?? []).find((v: { id: string }) => v.id === line.variantId)
+              : null;
+            if (line.variantId && !variant) return null; // size gone → unavailable
+            const title = variant
+              ? `${p.title} — ${variant.name}`
+              : (p.title as string);
             return [
-              line.productId,
+              key,
               {
                 ...line,
-                title: p.title as string,
-                price: Number(p.price),
+                key,
+                title,
+                price: Number(variant ? variant.price : p.price),
                 image: (p.images?.[0] as string) ?? null,
-                inStock: Boolean(p.inStock),
+                inStock: variant ? Boolean(variant.inStock) : Boolean(p.inStock),
               },
             ] as const;
           } catch {
@@ -122,11 +147,12 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
 
   const add = useCallback((line: Omit<CartLine, "qty"> & { qty?: number }) => {
     const qty = line.qty ?? 1;
+    const key = lineKey(line.productId, line.variantId);
     setLines((prev) => {
-      const found = prev.find((l) => l.productId === line.productId);
+      const found = prev.find((l) => lineKey(l.productId, l.variantId) === key);
       if (found) {
         return prev.map((l) =>
-          l.productId === line.productId
+          lineKey(l.productId, l.variantId) === key
             ? { ...l, qty: l.qty + qty, giftWrap: line.giftWrap ?? l.giftWrap }
             : l,
         );
@@ -135,20 +161,20 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     });
   }, []);
 
-  const setQty = useCallback((productId: string, qty: number) => {
+  const setQty = useCallback((key: string, qty: number) => {
     setLines((prev) =>
       prev
-        .map((l) => (l.productId === productId ? { ...l, qty: Math.max(0, qty) } : l))
+        .map((l) => (lineKey(l.productId, l.variantId) === key ? { ...l, qty: Math.max(0, qty) } : l))
         .filter((l) => l.qty > 0),
     );
   }, []);
 
-  const setGiftWrap = useCallback((productId: string, giftWrap: boolean) => {
-    setLines((prev) => prev.map((l) => (l.productId === productId ? { ...l, giftWrap } : l)));
+  const setGiftWrap = useCallback((key: string, giftWrap: boolean) => {
+    setLines((prev) => prev.map((l) => (lineKey(l.productId, l.variantId) === key ? { ...l, giftWrap } : l)));
   }, []);
 
   const remove = useCallback(
-    (productId: string) => setLines((prev) => prev.filter((l) => l.productId !== productId)),
+    (key: string) => setLines((prev) => prev.filter((l) => lineKey(l.productId, l.variantId) !== key)),
     [],
   );
 
@@ -156,10 +182,12 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
 
   const value = useMemo<CartValue>(() => {
     const items = lines
-      .map((l) => resolved.get(l.productId))
+      .map((l) => resolved.get(lineKey(l.productId, l.variantId)))
       .filter((x): x is CartItem => x !== undefined);
     // Only claim a line is gone once re-pricing has actually finished.
-    const unavailable = resolving ? [] : lines.filter((l) => !resolved.has(l.productId));
+    const unavailable = resolving
+      ? []
+      : lines.filter((l) => !resolved.has(lineKey(l.productId, l.variantId)));
 
     return {
       items,
