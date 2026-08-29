@@ -6,7 +6,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
 import Icon from "@/components/Icon";
 import { useCart } from "@/components/CartContext";
-import { REFERRAL_KEY } from "@/components/ReferralCapture";
+import { PROMO_KEY, REFERRAL_KEY } from "@/components/ReferralCapture";
 import { naira } from "@/lib/format";
 
 const inputStyle =
@@ -52,6 +52,13 @@ const readReferral = () => {
     return null;
   }
 };
+const readPromo = () => {
+  try {
+    return localStorage.getItem(PROMO_KEY);
+  } catch {
+    return null;
+  }
+};
 
 export default function CheckoutFlow() {
   const router = useRouter();
@@ -85,6 +92,16 @@ export default function CheckoutFlow() {
   // render stay in step without an effect.
   const storedReferral = useSyncExternalStore(subscribeNoop, readReferral, () => null);
   const referral = searchParams.get("ref") ?? storedReferral;
+
+  // An influencer campaign link lands the buyer with ?promo=CODE (or it was
+  // captured earlier). Prefill the promo field with it once, so the code the
+  // buyer arrived with is applied to the order without them retyping it — while
+  // still letting them change it.
+  const storedPromo = useSyncExternalStore(subscribeNoop, readPromo, () => null);
+  const capturedPromo = searchParams.get("promo") ?? storedPromo;
+  useEffect(() => {
+    if (capturedPromo) setPromoCode((cur) => cur || capturedPromo);
+  }, [capturedPromo]);
 
   const payload = useMemo(
     () =>
